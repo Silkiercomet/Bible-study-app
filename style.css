@@ -1,0 +1,329 @@
+  :root {
+    --bg: #eef0f3;
+    --surface: #ffffff;
+    --midnight: #1a2236;
+    --midnight-soft: #4a5476;
+    --midnight-mute: #8a92a8;
+    --teal: #2c9d96;
+    --teal-soft: rgba(44, 157, 150, 0.1);
+    --teal-hover: #248a84;
+    --ember: #e8693d;
+    --ember-soft: rgba(232, 105, 61, 0.1);
+    --ember-hover: #d85a30;
+    --purple: #6b5fd4;
+    --purple-soft: rgba(107, 95, 212, 0.1);
+    --border: #dde1e7;
+    --input-border: #ccd2db;
+    --shadow: rgba(26, 34, 54, 0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: 'Poppins', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--midnight);
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  .page { min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: var(--midnight);
+    color: white;
+    padding: 12px 16px 26px;
+  }
+  .hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .back {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 4px;
+    font-weight: 500;
+    min-width: 60px;
+  }
+  .hero-spacer { min-width: 60px; }
+
+  /* Centered logo slot — drop real logo in here */
+  .logo-slot {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .logo-img {
+    height: 34px;
+    width: auto;
+    display: block;
+  }
+
+  .hero-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .pill-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+  .hero p {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 440px;
+  }
+
+  /* ===== CONTENT ===== */
+  .content {
+    flex: 1;
+    padding: 26px 16px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 26px 22px;
+    box-shadow: 0 2px 14px var(--shadow);
+  }
+
+  .field-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--midnight-soft);
+    margin-bottom: 7px;
+  }
+  .email-input {
+    width: 100%;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--midnight);
+    background: #fff;
+    border: 1.5px solid var(--input-border);
+    border-radius: 12px;
+    padding: 14px 14px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .email-input::placeholder { color: var(--midnight-mute); }
+  .email-input:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px var(--teal-soft);
+  }
+  /* Inline error state — applied to inputs and shows the message below.
+     Self-clears as soon as the user starts typing (see <script> at bottom). */
+  .email-input.error {
+    border-color: var(--danger, #d64545);
+    background: rgba(214, 69, 69, 0.04);
+  }
+  .email-input.error:focus {
+    box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.18);
+  }
+  .err-msg {
+    display: none;
+    font-size: 12px;
+    color: var(--danger, #d64545);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+  .field-block.invalid .err-msg { display: block; }
+  .field-block { margin-bottom: 14px; }
+  .label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 7px;
+  }
+  .forgot-link {
+    font-size: 12px;
+    color: var(--midnight-soft);
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 3px;
+    font-weight: 500;
+  }
+  .forgot-link:hover { color: var(--midnight); }
+  /* Subtle attempts warning shown after repeated failures (3+). */
+  .attempts-note {
+    display: none;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--midnight-soft);
+    text-align: center;
+    padding: 8px 12px;
+    background: rgba(232, 105, 61, 0.08);
+    border-radius: 8px;
+  }
+  .attempts-note.show { display: block; }
+
+  /* Success banner — shown atop the auth card after a successful action
+     (password reset, email verified, etc). Read from ?reset=success in URL. */
+  .success-banner {
+    display: none;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto 14px;
+    padding: 14px 16px;
+    background: var(--teal-soft);
+    border: 1px solid rgba(44, 157, 150, 0.3);
+    border-radius: 12px;
+    display: none;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .success-banner.show { display: flex; }
+  .success-banner .sb-ic {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 1px;
+  }
+  .success-banner .sb-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--midnight);
+  }
+  .success-banner .sb-text strong { font-weight: 700; }
+
+  /* Primary magic-link button */
+  .btn-primary {
+    width: 100%;
+    margin-top: 14px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    background: var(--teal);
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-primary:hover { background: var(--teal-hover); }
+  .btn-primary:active { transform: scale(0.99); }
+
+  .helper {
+    font-size: 12px;
+    color: var(--midnight-mute);
+    margin-top: 10px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+    color: var(--midnight-mute);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Google secondary button */
+  .btn-google {
+    width: 100%;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--midnight);
+    background: #fff;
+    border: 1.5px solid var(--input-border);
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .btn-google:hover { background: var(--bg); border-color: var(--midnight-mute); }
+  .g-icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+  /* Footer links inside card */
+  .card-foot {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 14px;
+    color: var(--midnight-soft);
+  }
+  .card-foot a {
+    color: var(--midnight);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 3px;
+  }
+  .card-foot .row + .row { margin-top: 8px; }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    padding: 20px;
+    font-size: 13px;
+    color: var(--midnight-mute);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    font-weight: 500;
+    border-top: 1px solid var(--border);
+  }
+  .footer a { color: var(--midnight-mute); text-decoration: none; }
+
+  /* ===== DESKTOP ===== */
+  @media (min-width: 768px) {
+    .hero { padding: 16px 40px 34px; }
+    .hero h1 { font-size: 26px; }
+    .hero p { font-size: 15px; }
+    .pill-badge { font-size: 11px; padding: 5px 14px; }
+    .content { padding: 44px 24px 60px; }
+    .auth-card { padding: 32px 30px; }
+  }
