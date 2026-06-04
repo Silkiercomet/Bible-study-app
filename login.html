@@ -62,30 +62,32 @@
         <!-- Email + password is now the primary login method. Magic link sits
              below as a secondary option (still always sends an email, branched
              by server-side existence check — see check-email.html). -->
-        <div class="field-block invalid" id="emailBlock">
-          <label class="field-label" for="email">Email address</label>
-          <input class="email-input error" id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" value="jordan.reese@gmail.com">
-          <div class="err-msg" id="emailErr">Incorrect email or password.</div>
-        </div>
-
-        <div class="field-block invalid" id="passwordBlock">
-          <div class="label-row">
-            <label class="field-label" for="password">Password</label>
-            <!-- Forgot Password? Always visible (standard UX), not error-only.
-                 -> reset-password flow (TBD, not built yet). -->
-            <a class="forgot-link" href="forgot-password.html">Forgot password?</a>
+        <form id="loginForm">
+            <div class="field-block" id="emailBlock">
+            <label class="field-label" for="email">Email address</label>
+            <input class="email-input " id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" value="test@bibledose.com">
+            <div class="err-msg" id="emailErr">Incorrect email or password.</div>
           </div>
-          <input class="email-input error" id="password" type="password" autocomplete="current-password" placeholder="••••••••" value="••••••••">
-          <div class="err-msg">&nbsp;</div>
-        </div>
 
-        <button class="btn-primary" id="signInBtn">Sign in</button>
+          <div class="field-block" id="passwordBlock">
+            <div class="label-row">
+              <label class="field-label" for="password">Password</label>
+              <!-- Forgot Password? Always visible (standard UX), not error-only.
+                  -> reset-password flow (TBD, not built yet). -->
+              <a class="forgot-link" href="forgot-password.html">Forgot password?</a>
+            </div>
+            <input class="email-input " id="password" type="password" autocomplete="current-password" placeholder="••••••••" value="">
+            <!-- <div class="err-msg">&nbsp;</div> -->
+          </div>
 
-        <!-- Lockout warning after 3+ failed attempts. Server-driven; render
-             only when attempt count exceeds threshold. -->
-        <div class="attempts-note show" id="attemptsNote">
-          For your security, repeated incorrect attempts may temporarily lock the account.
-        </div>
+          <button class="btn-primary" type="submit" id="signInBtn">Sign in</button>
+
+          <!-- Lockout warning after 3+ failed attempts. Server-driven; render
+              only when attempt count exceeds threshold. -->
+          <div class="attempts-note hidden" id="attemptsNote">
+            For your security, repeated incorrect attempts may temporarily lock the account.
+          </div>
+        </form>
 
         <div class="divider">or</div>
 
@@ -123,31 +125,8 @@
   // Success banner driven by URL params. Examples:
   //   /login.html?reset=success     -> "Password updated"
   // Dev: add other states later (verified=email, signup=complete, etc.).
-  (function () {
-    var qs = new URLSearchParams(location.search);
-    if (qs.get('reset') === 'success') {
-      document.getElementById('successBanner').classList.add('show');
-      // Clear the lockout/error state on success.
-      document.querySelectorAll('.field-block').forEach(function(b){ b.classList.remove('invalid'); });
-      document.querySelectorAll('.email-input').forEach(function(i){ i.classList.remove('error'); });
-      document.getElementById('attemptsNote').classList.remove('show');
-      document.getElementById('email').value = '';
-      document.getElementById('password').value = '';
-    }
-  })();
-
-  // Inline error state self-clears as soon as the user types.
-  // Dev: on a real failed sign-in, server returns 401 -> set .invalid on
-  // both field-blocks + .error on both inputs + show #attemptsNote when
-  // attempt-count >= threshold (e.g. 3).
-  ['email','password'].forEach(function(id){
-    var input = document.getElementById(id);
-    input.addEventListener('input', function(){
-      input.classList.remove('error');
-      var block = input.closest('.field-block');
-      if (block) block.classList.remove('invalid');
-    });
-  });
+  
 </script>
+<script src="script.js"></script>
 </body>
 </html>
