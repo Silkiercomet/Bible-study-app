@@ -10,12 +10,15 @@
   --primary-soft: rgba(255, 102, 0, 0.1);
   --primary-hover: #e55c00;
 
+  --secondary: #0FA8A8; 
+  --secondary-soft: rgba(15, 168, 168, 0.1);
+  --secondary-dark: #0B7E7E;
   --border: #dde1e7;
   --input-border: #ccd2db;
   --shadow: rgba(44, 58, 95, 0.06);
 
   /* Alertas Rojas */
-  --danger: #e74c3c;
+  --danger: #D83232;
   --danger-soft: rgba(231, 76, 60, 0.06);
 }
 * {

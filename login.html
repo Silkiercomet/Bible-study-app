@@ -64,7 +64,12 @@
              by server-side existence check — see check-email.html). -->
         <form id="loginForm">
             <div class="field-block" id="emailBlock">
-            <label class="field-label" for="email">Email address</label>
+            <div class="label-row">
+              <label class="field-label" for="password">Email address</label>
+              <!-- Forgot Password? Always visible (standard UX), not error-only.
+                  -> reset-password flow (TBD, not built yet). -->
+              <a class="forgot-link" href="recover-email.html">Forgot email?</a>
+            </div>
             <input class="email-input " id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" value="test@bibledose.com">
             <div class="err-msg" id="emailErr">Incorrect email or password.</div>
           </div>
@@ -89,14 +94,15 @@
           </div>
         </form>
 
+        <!-- 
         <div class="divider">or</div>
 
-        <!-- Magic link: POST email -> check-email.html ALWAYS. Branch is in the email content, not on screen. -->
+        Magic link: POST email -> check-email.html ALWAYS. Branch is in the email content, not on screen. 
         <button class="btn-google" id="magicLinkBtn">
           <span style="font-size:16px;">✦</span> Email me a sign-in link
         </button>
 
-        <!-- Google OAuth. Official "G" mark, do not recolor. New email -> signup-participant.html prefilled. -->
+         Google OAuth. Official "G" mark, do not recolor. New email -> signup-participant.html prefilled. 
         <button class="btn-google" style="margin-top:10px;">
           <svg class="g-icon" viewBox="0 0 48 48" aria-hidden="true">
             <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -105,7 +111,7 @@
             <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
           </svg>
           Continue with Google
-        </button>
+        </button> -->
 
         <!-- create-account.html = role picker. "Change sign-in" href="#" -> home route. -->
         <div class="card-foot">
