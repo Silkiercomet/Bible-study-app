@@ -41,7 +41,12 @@ body {
   display: flex;
   flex-direction: column;
 }
+input:focus{
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
 
+}
 /* ===== HERO ===== */
 .hero {
   background: var(--navy-dark);
@@ -52,7 +57,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 22px;
 }
 .back {
   font-size: 13px;
@@ -76,7 +80,7 @@ body {
   gap: 9px;
 }
 .logo-img {
-  height: 34px;
+  max-height: 80px;
   width: auto;
   display: block;
 }
@@ -140,7 +144,7 @@ body {
   width: 100%;
   font-family: inherit;
   font-size: 15px;
-  color: var(--midnight);
+  color: var(--navy-dark);
   background: #fff;
   border: 1.5px solid var(--input-border);
   border-radius: 12px;
@@ -154,8 +158,8 @@ body {
 }
 .email-input:focus {
   outline: none;
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px var(--teal-soft);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
 }
 /* Inline error state — applied to inputs and shows the message below.
      Self-clears as soon as the user starts typing (see <script> at bottom). */
@@ -203,7 +207,7 @@ body {
   display: none;
   margin-top: 10px;
   font-size: 12px;
-  color: var(--midnight-soft);
+  color: var(--navy-mute);
   text-align: center;
   padding: 8px 12px;
   background: rgba(232, 105, 61, 0.08);
@@ -221,7 +225,7 @@ body {
   max-width: 420px;
   margin: 0 auto 14px;
   padding: 14px 16px;
-  background: var(--teal-soft);
+  background: var(--secondary-soft);
   border: 1px solid rgba(44, 157, 150, 0.3);
   border-radius: 12px;
   display: none;
@@ -230,13 +234,14 @@ body {
 }
 .success-banner.show {
   display: flex;
+  align-items: center;
 }
 .success-banner .sb-ic {
   flex-shrink: 0;
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--teal);
+  background: var(--secondary-dark);
   color: #fff;
   display: grid;
   place-items: center;
@@ -247,7 +252,7 @@ body {
 .success-banner .sb-text {
   font-size: 13px;
   line-height: 1.5;
-  color: var(--midnight);
+  color: var(--navy-dark);
 }
 .success-banner .sb-text strong {
   font-weight: 700;
@@ -347,10 +352,10 @@ body {
   border-top: 1px solid var(--border);
   text-align: center;
   font-size: 14px;
-  color: var(--midnight-soft);
+  color: var(--navy-mute);
 }
 .card-foot a {
-  color: var(--midnight);
+  color: var(--navy);
   font-weight: 600;
   text-decoration: underline;
   text-decoration-color: var(--border);
@@ -397,7 +402,7 @@ body {
   font-family: inherit;
   font-size: 15px;
   font-weight: 600;
-  color: var(--midnight);
+  color: var(--navy-dark);
   background: #fff;
   border: 1.5px solid var(--input-border);
   border-radius: 12px;
@@ -409,7 +414,7 @@ body {
 }
 .btn-secondary:hover {
   background: var(--bg);
-  border-color: var(--midnight-mute);
+  border-color: var(--navy-mute);
 }
 @media (min-width: 768px) {
   .hero {
@@ -443,7 +448,7 @@ body {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: var(--teal-soft);
+  background: var(--secondary-soft);
   display: grid;
   place-items: center;
   margin: 0 auto 18px;
@@ -456,12 +461,12 @@ body {
 }
 .auth-card .sub {
   font-size: 14px;
-  color: var(--midnight-soft);
+  color: var(--navy-mute);
   line-height: 1.6;
 }
 .sent-to {
   font-weight: 700;
-  color: var(--midnight);
+  color: var(--navy-dark);
   margin-top: 6px;
 }
 .actions {
@@ -479,7 +484,7 @@ body {
   line-height: 1.6;
 }
 .small-help a {
-  color: var(--midnight);
+  color: var(--navy-dark);
   font-weight: 600;
   text-decoration: underline;
   text-decoration-color: var(--border);

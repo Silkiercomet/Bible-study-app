@@ -46,7 +46,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 22px;
 }
 .back {
   font-size: 13px;
@@ -68,7 +67,7 @@ body {
   gap: 9px;
 }
 .logo-img {
-  height: 34px;
+  max-height: 80px;
   width: auto;
   display: block;
 }
