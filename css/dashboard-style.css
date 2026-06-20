@@ -144,6 +144,29 @@ body {
 .top-join:hover { background: var(--orange-hover); }
 .top-join svg   { width: 16px; height: 16px; flex-shrink: 0; }
 
+/* Botón "Register for a Group" — orange ghost/outline.
+   Reusa .btn-orange-ghost (mismo look que Invite guest)
+   con el tamaño y layout propios de la topbar. */
+.top-register {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 18px;
+  border-radius: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.top-register svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* Texto largo/corto de los botones de la topbar.
+   Por defecto (≥810px) se muestra el texto completo;
+   el texto corto se activa en el media query de 810px
+   más abajo para que el ícono + label corto no rompan
+   el layout en pantallas medianas/pequeñas. */
+.btn-text-short { display: none; }
+.btn-text-full  { display: inline; }
+
 /* Wrapper relativo — ancla el dropdown bajo el pill */
 .profile-wrap {
   position: relative;
@@ -466,13 +489,21 @@ hr.div { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
   background: #fff;
   color: var(--orange-press);
   border: 1.5px solid var(--orange);
+  cursor: pointer;
+  transition: 300ms ease-in-out;
 }
 .btn-orange-ghost:hover { background: var(--orange-tint); }
 
 /* Secundario — gris neutro (View recap, acciones menores) */
 .btn-secondary { background: var(--bg-tint); color: var(--navy); border: 1.5px solid var(--line); }
 .btn-secondary:hover { background: #e3e7ec; border-color: #cdd4de; }
-
+.btn-pagination {
+  background: #fff;
+  color: var(--navy);
+  border: 1.5px solid var(--line);
+  transition: background .15s, border-color .15s;
+}
+.btn-pagination:hover { background: var(--teal-tint); border-color: var(--teal); }
 /* Hint de sala cerrada */
 .hint {
   font-size: 12.5px;
@@ -527,7 +558,12 @@ hr.div { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
   to   { opacity: 1; transform: scale(1)   translateY(0); }
 }
 
-/* Header del modal */
+/* .inv-modal-header / .inv-modal-title — ya no se generan
+   desde el JS (los 4 modales usan .split-modal-header /
+   .split-modal-title más abajo). Se conservan por si algún
+   markup estático llegara a necesitarlas.
+   .inv-close SÍ se reutiliza: es la clase del botón de
+   cerrar en .split-modal-header. */
 .inv-modal-header {
   display: flex;
   align-items: center;
@@ -555,6 +591,203 @@ hr.div { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
 }
 .inv-close:hover { background: #dde1e8; }
 .inv-close svg   { width: 16px; height: 16px; }
+
+/* ── SPLIT MODAL SHELL ────────────────────────────────────
+   Estructura compartida por los 4 modales (Join a Different
+   Study, Register for a Group, Invite Guest, Share Study):
+   título centrado arriba (Poppins, Navy, Bold), franja/borde
+   de color según el modal, dos columnas side-by-side, y
+   footer con Cancel + botón de envío.
+   ─────────────────────────────────────────────────────── */
+.split-modal {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Franja sólida superior — Join a Different Study */
+.split-modal.modal-accent-band-orange {
+  border-top: 8px solid var(--orange);
+}
+/* Borde superior — Register for a Group */
+.split-modal.modal-accent-border-orange {
+  border-top: 4px solid var(--orange);
+}
+/* Borde superior — Invite Guest / Share Study */
+.split-modal.modal-accent-border-teal {
+  border-top: 4px solid var(--teal);
+}
+
+.split-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 22px 52px 4px;
+  flex-shrink: 0;
+}
+.split-modal-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+}
+.split-modal-header .inv-close {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+}
+
+.split-modal-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Footer — Cancel + Submit, siempre anclado abajo */
+.split-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 14px 22px 22px;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.split-modal-footer .btn { min-width: 0; flex: none; }
+
+/* ── CODE PANEL — Join code / Group code ─────────────────
+   Input monoespaciado en mayúsculas + sección QR + bloque
+   de confirmación rígido cuando el código es válido.
+   ─────────────────────────────────────────────────────── */
+.code-field {
+  font-family: 'SF Mono', 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+.code-error {
+  font-size: 12px;
+  color: var(--red);
+  margin: -2px 0 10px;
+}
+.code-camera-msg {
+  font-size: 12px;
+  color: var(--bg-base);
+  background: var(--bg-tint);
+  border-radius: 10px;
+  padding: 10px 12px;
+  line-height: 1.5;
+}
+
+/* Bloque de confirmación rígido — reemplaza todo el panel
+   izquierdo cuando el código/QR fue validado */
+.code-confirm-block {
+  background: var(--teal-tint);
+  border: 1px solid #c9eded;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.code-confirm-check {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--teal-dark);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.code-confirm-block p {
+  font-size: 13px;
+  color: var(--navy);
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+.code-confirm-block p:last-child { margin-bottom: 0; }
+.code-confirm-block strong { color: var(--navy); font-weight: 700; }
+
+/* QR scan box — línea animada teal mientras escanea */
+.qr-box {
+  margin-top: 12px;
+  border: 1.5px dashed var(--teal);
+  border-radius: 12px;
+  background: var(--teal-tint);
+  min-height: 140px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+}
+
+/* Estado idle — clickeable, muestra ícono QR + labels */
+.qr-box--idle {
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.qr-box--idle:hover,
+.qr-box--idle:focus-visible {
+  background: #d0f0f0;
+  border-color: var(--teal-dark);
+  outline: none;
+}
+.qr-icon {
+  color: var(--teal-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: .85;
+}
+.qr-lbl {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--teal-dark);
+  line-height: 1.3;
+}
+.qr-sub {
+  font-size: 11px;
+  color: var(--teal-dark);
+  opacity: .75;
+  line-height: 1.3;
+}
+
+/* Estado scanning — sin cursor pointer, solo el sweep animado */
+.qr-box-msg {
+  font-size: 11.5px;
+  color: var(--teal-dark);
+  font-weight: 600;
+  padding: 0 14px;
+  position: relative;
+  z-index: 1;
+}
+.qr-scan-line {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  height: 2px;
+  background: var(--teal);
+  box-shadow: 0 0 8px 1px rgba(15,168,168,.6);
+  animation: qrSweep 1.8s ease-in-out infinite;
+}
+@keyframes qrSweep {
+  0%   { top: 8%; }
+  50%  { top: 88%; }
+  100% { top: 8%; }
+}
+
+/* Estado inválido — recuadro rojo, clickeable para reintentar */
+.qr-box--invalid {
+  border-color: #D93025;
+  border-style: solid;
+  background: #FBEAE9;
+  cursor: pointer;
+}
+.qr-box--invalid .qr-box-msg { color: #D93025; }
 
 /* Cuerpo split — dos columnas */
 .inv-body {
@@ -593,20 +826,16 @@ hr.div { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
 .inv-field:focus { border-color: var(--teal); }
 .inv-field.error { border-color: #D93025; }
 
-/* URL display en el share modal — muestra el link de notas */
-.share-url {
-  display: block;
-  font-size: 11px;
-  color: var(--bg-base);
-  word-break: break-all;
-  background: var(--bg-tint);
-  border-radius: 8px;
-  padding: 8px 10px;
-  margin-bottom: 10px;
+/* URL display en el share modal — input readonly que
+   muestra el link de notas completo */
+.share-url-field {
   font-family: monospace;
-  line-height: 1.5;
-  border: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--bg-base);
+  background: var(--bg-tint);
+  cursor: text;
 }
+.share-url-field:focus { border-color: var(--teal); }
 
 /* Reset del <form> dentro de .inv-col —
    el browser añade margin a forms por defecto */
@@ -702,11 +931,47 @@ hr.div { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
   border-radius: 50%;
   flex-shrink: 0;
 }
-.acc-dot.ended { background: var(--bg-light); }
+/* Attendance dot — teal si asistió, gris si no (solo lectura) */
+.acc-dot.attended { background: var(--teal); }
+.acc-dot.missed   { background: var(--bg-light); }
+
+/* Attendance pills — solo lectura, no cliqueables.
+   .att-pill--header: pill teal claro "Attended" en la fila
+     colapsada. Solo se renderiza cuando attended === true;
+     si no asistió, no se muestra ningún pill en el header.
+   .att-pill--body: pill en el cuerpo expandido, siempre
+     visible — "Attended" (teal) o "Missed" (gris). */
+.att-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.att-pill--header {
+  background: var(--teal-tint);
+  color: var(--teal-dark);
+}
+.att-pill--body {
+  margin-bottom: 10px;
+}
+.att-pill--body.att-pill--attended {
+  background: var(--teal-tint);
+  color: var(--teal-dark);
+}
+.att-pill--body.att-pill--missed {
+  background: var(--bg-tint);
+  color: var(--bg-dark);
+  border: 1px solid var(--line);
+}
 
 .acc-titles { flex: 1; min-width: 0; }
+/* Study Title — línea primaria, bold (jerarquía invertida) */
 .acc-title {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 15px;
   color: var(--navy);
   display: block;
@@ -714,6 +979,7 @@ hr.div { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* Church name — línea secundaria / subtexto */
 .acc-subtitle {
   font-size: 12.5px;
   color: var(--bg-base);
@@ -1059,6 +1325,26 @@ hr.div { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
 .toast svg  { width: 16px; height: 16px; flex-shrink: 0; color: var(--teal); }
 
 /* ═══════════════════════════════════════════════
+   14.5. TOPBAR — TEXTO CORTO EN PANTALLAS <810px
+   Los botones "Join a different study" y "Register
+   for a Group" rompían el flujo del header en anchos
+   intermedios. Por debajo de 810px se conserva el
+   ícono y se usa una etiqueta corta ("Join" /
+   "New Group") para que ambos botones, el pill de
+   perfil y el logo quepan cómodamente en una sola fila.
+   ═══════════════════════════════════════════════ */
+@media (max-width: 810px) {
+  .btn-text-full  { display: none; }
+  .btn-text-short { display: inline; }
+
+  .top-join,
+  .top-register {
+    padding: 9px 14px;
+    gap: 6px;
+  }
+}
+
+/* ═══════════════════════════════════════════════
    15. RESPONSIVIDAD MÓVIL
    El dashboard debe funcionar bien en móvil.
    Ajustes de tipografía, espaciado y botones.
@@ -1067,15 +1353,32 @@ hr.div { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
   #screen-dashboard { padding: 12px 12px 60px; }
   #screen-settings  { padding: 12px 12px 60px; }
 
-  .topbar { padding: 10px 12px 10px 14px; border-radius: 12px; }
-  .top-join {
-    font-size: 0; /* Ocultar texto, mostrar solo ícono */
-    padding: 10px;
-    border-radius: 10px;
+  /* Padding general del topbar reducido — optimiza espacio vertical */
+  .topbar { padding: 8px 10px 8px 12px; border-radius: 12px; }
+
+  /* Contenedor de botones — permite que envuelvan (wrap) de
+     forma limpia cuando el ancho no alcanza para mantenerlos
+     todos en una sola fila */
+  .topbar-right {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
   }
-  .top-join::after { content: "Join"; font-size: 13px; }
-  /* Mostrar solo ícono en móvil para ahorrar espacio */
-  .top-join .btn-text { display: none; }
+
+  /* Botones de la topbar — font-size y padding reducidos
+     proporcionalmente, border-radius más compacto/ajustado */
+  .top-join,
+  .top-register {
+    font-size: 12.5px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    gap: 6px;
+  }
+  .top-join svg, .top-register svg { width: 14px; height: 14px; }
+
+  /* Profile pill — oculta el nombre, deja solo la inicial */
+  .profile { padding: 4px 8px 4px 4px; gap: 6px; }
+  .pavatar { width: 28px; height: 28px; font-size: 12px; }
   .pname { display: none; }
 
   .welcome { padding: 18px 20px; }
@@ -1095,12 +1398,18 @@ hr.div { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
   }
   .inv-col + .inv-col { border-left: none; border-top: 1px solid var(--line); }
 
+  /* Split modals — footer apilado, botones full width */
+  .split-modal-footer { flex-direction: column-reverse; }
+  .split-modal-footer .btn { width: 100%; }
+  .split-modal-title { font-size: 16px; }
+
   .settings-card { padding: 24px 20px; }
 
-  .btn-primary { font-size: 15px; }
-  .actions { flex-direction: column; }
+  .btn-primary { font-size: 15px; transition: ease-in-out 300ms; }
+  .actions { justify-content: space-between; }
   .actions .btn-primary { min-width: unset; width: 100%; }
 }
+
 
 /* ═══════════════════════════════════════════════
    16. CLASES DE UTILIDAD
@@ -1163,7 +1472,16 @@ a.btn {
   text-decoration: none;
   color: inherit;
 }
+.btn-secondary--teal{
+  background: var(--teal-tint);
+  color: var(--teal-dark);
+  border:1.5px solid var(--teal-dark);
+  transition: 300ms ease-in-out;
+}
+.btn-secondary--teal:hover {
 
+  background: #c6e9e6;
+}
 .btn-secondary--white { background: var(--surface); }
 .btn-secondary--white:hover { background: #f0f2f5; }
 
@@ -1222,4 +1540,137 @@ a.btn {
 
 @media (max-width: 420px) {
   .brand span.name { display: none; }
+}
+/* ═══════════════════════════════════════════════════
+   PROJECT 3 — DASHBOARD REFINEMENTS
+   ═══════════════════════════════════════════════════ */
+
+/* ── 2. History search row — extends existing styles ─
+   .history-search-wrap already sets the white card
+   look. We add a flex row inside it so the existing
+   input + the new date-select sit side by side.
+   ─────────────────────────────────────────────────── */
+.history-search-wrap {
+  /* Override: wrap is now a column container */
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 12px 14px;
+}
+.history-search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* Input wrapper keeps icon + input + clear in a row */
+.history-search-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.history-search-input-wrap > svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--bg-light);
+}
+/* Date select — same visual weight as the input */
+.history-date-filter-wrap { flex-shrink: 0; }
+.history-date-select {
+  appearance: none;
+  background: var(--bg-tint)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236E7881' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 10px center;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  color: var(--body);
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 30px 7px 12px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color .15s;
+  height: 36px;
+}
+.history-date-select:focus { border-color: var(--teal); }
+
+/* Date range — flight-selector style, hidden until Custom */
+.history-date-range {
+  display: none;
+  padding-top: 2px;
+}
+.history-date-range.visible { display: block; }
+.date-range-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.date-range-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.date-range-field + .date-range-field {
+  border-left: 1.5px solid var(--line);
+}
+.date-range-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  color: var(--body);
+  padding: 9px 12px;
+  cursor: pointer;
+}
+.date-range-input::-webkit-calendar-picker-indicator {
+  opacity: .5;
+  cursor: pointer;
+}
+
+/* ── 3. Pagination bar ───────────────────────────────
+   Uses existing .btn and .btn-secondary — no new
+   button modifier needed.
+   ─────────────────────────────────────────────────── */
+.history-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.pagination-info {
+  font-size: 12px;
+  color: var(--bg-light);
+  font-weight: 500;
+}
+.pagination-controls {
+  display: flex;
+  gap: 8px;
+}
+/* Compact size for pagination buttons — override base .btn padding */
+.pagination-controls .btn {
+  font-size: 13px;
+  padding: 8px 16px;
+}
+.pagination-controls .btn:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 600px) {
+
+  .history-date-select { width: 100%; }
+  .history-pagination  { align-items: center; }
 }

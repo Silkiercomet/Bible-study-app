@@ -76,9 +76,21 @@
     <nav class="topbar-right" aria-label="Controles de usuario">
       <button class="top-join u-hidden" id="topJoinBtn" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M12 5v14M5 12h14"/>
+          <rect x="4" y="3" width="11" height="18" rx="1.5"/>
+          <path d="M21 12H10M16 8l4 4-4 4"/>
         </svg>
-        <span class="btn-text">Join a different study</span>
+        <span class="btn-text btn-text-full">Join a different study</span>
+        <span class="btn-text btn-text-short">Join</span>
+      </button>
+
+      <button class="btn-orange-ghost top-register u-hidden" id="topRegisterBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M19 8v6M22 11h-6"/>
+        </svg>
+        <span class="btn-text btn-text-full">Register for a Group</span>
+        <span class="btn-text btn-text-short">New Group</span>
       </button>
 
       <!-- Wrapper relativo para que el dropdown se posicione
@@ -145,6 +157,8 @@
        para que los cambios de lifecycle se anuncien. -->
   <section id="liveZone" aria-live="polite"></section>
 
+
+
   <!-- STUDY HISTORY / UNREGISTERED STATE
        <section> siempre presente; su contenido
        varía según data.registered. -->
@@ -176,7 +190,8 @@
     <nav class="topbar-right" aria-label="Controles de usuario">
       <button class="top-join" id="settingsTopJoinBtn" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M12 5v14M5 12h14"/>
+          <rect x="4" y="3" width="11" height="18" rx="1.5"/>
+          <path d="M21 12H10M16 8l4 4-4 4"/>
         </svg>
         <span class="btn-text">Join a different study</span>
       </button>
@@ -362,7 +377,8 @@
     <nav class="topbar-right" aria-label="Controles de usuario">
       <button class="top-join" id="profileTopJoinBtn" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M12 5v14M5 12h14"/>
+          <rect x="4" y="3" width="11" height="18" rx="1.5"/>
+          <path d="M21 12H10M16 8l4 4-4 4"/>
         </svg>
         <span class="btn-text">Join a different study</span>
       </button>
@@ -575,6 +591,10 @@
 
 </div><!-- /dev-panel -->
 
+<!-- JOIN MODAL ROOT — nodo de montaje del modal "Join a different study". -->
+<div id="join-modal-root"></div>
+<!-- REGISTER MODAL ROOT — nodo de montaje del modal "Register for a Group". -->
+<div id="register-modal-root"></div>
 <!-- INVITE MODAL ROOT — nodo de montaje del modal de invitación. -->
 <div id="inv-modal-root"></div>
 <!-- SHARE MODAL ROOT — nodo de montaje del modal "Share study". -->

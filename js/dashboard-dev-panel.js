@@ -6,20 +6,20 @@
    ───────────────────────────────────────────────── */
 
 // Datos base compartidos por todos los escenarios
-const DEV_BASE_PAST = [
-  { id: 'p1', title: 'The Good Soil',   leader: 'Elias Ocasio', church: 'Life Church',    start: now - 7  * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c' },
-  { id: 'p2', title: 'Faith Over Fear', leader: 'Maria Torres',  church: 'Grace Chapel',   start: now - 14 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c' },
-  { id: 'p3', title: 'Romans: Ch. 8',   leader: 'James Okafor',  church: 'New Hope Bible', start: now - 21 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c' },
-  { id: 'p4', title: 'The Power of Forgiveness', leader: 'Pastor John Doe', church: 'Community Church', start: now - 28 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/new-study-forgiveness' },
-  { id: 'p3', title: 'Romans: Ch. 8',   leader: 'James Okafor',  church: 'New Hope Bible', start: now - 21 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c' },
-  { id: 'p4', title: 'The Power of Forgiveness', leader: 'Pastor John Doe', church: 'Community Church', start: now - 28 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/new-study-forgiveness' },
-  { id: 'p3', title: 'Romans: Ch. 8',   leader: 'James Okafor',  church: 'New Hope Bible', start: now - 21 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c' },
-  { id: 'p4', title: 'The Power of Forgiveness', leader: 'Pastor John Doe', church: 'Community Church', start: now - 28 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/new-study-forgiveness' },
-  { id: 'p3', title: 'Romans: Ch. 8',   leader: 'James Okafor',  church: 'New Hope Bible', start: now - 21 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c' },
-  { id: 'p4', title: 'The Power of Forgiveness', leader: 'Pastor John Doe', church: 'Community Church', start: now - 28 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/new-study-forgiveness' },
-  { id: 'p3', title: 'Romans: Ch. 8',   leader: 'James Okafor',  church: 'New Hope Bible', start: now - 21 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c' },
-  { id: 'p4', title: 'The Power of Forgiveness', leader: 'Pastor John Doe', church: 'Community Church', start: now - 28 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/new-study-forgiveness' },
-  { id: 'p5', title: 'Understanding the Gospels', leader: 'Sister Jane Smith', church: 'First Baptist', start: now - 35 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/gospels-overview' }
+const DEV_BASE_PAST = [ // Se han añadido IDs únicos, títulos únicos y la propiedad 'attended'
+  { id: 'p1', title: 'The Good Soil', leader: 'Elias Ocasio', church: 'Life Church', start: now - 7 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c', attended: true },
+  { id: 'p2', title: 'Faith Over Fear', leader: 'Maria Torres', church: 'Grace Chapel', start: now - 14 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c', attended: false },
+  { id: 'p3', title: 'Romans: Ch. 8 (Session 1)', leader: 'James Okafor', church: 'New Hope Bible', start: now - 21 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c', attended: true },
+  { id: 'p4', title: 'The Power of Forgiveness (Session 1)', leader: 'Pastor John Doe', church: 'Community Church', start: now - 28 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/new-study-forgiveness', attended: false },
+  { id: 'p5', title: 'Romans: Ch. 8 (Session 2)', leader: 'James Okafor', church: 'New Hope Bible', start: now - 35 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c', attended: true },
+  { id: 'p6', title: 'The Power of Forgiveness (Session 2)', leader: 'Pastor John Doe', church: 'Community Church', start: now - 42 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/new-study-forgiveness', attended: false },
+  { id: 'p7', title: 'Romans: Ch. 8 (Session 3)', leader: 'James Okafor', church: 'New Hope Bible', start: now - 49 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c', attended: true },
+  { id: 'p8', title: 'The Power of Forgiveness (Session 3)', leader: 'Pastor John Doe', church: 'Community Church', start: now - 56 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/new-study-forgiveness', attended: false },
+  { id: 'p9', title: 'Romans: Ch. 8 (Session 4)', leader: 'James Okafor', church: 'New Hope Bible', start: now - 63 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c', attended: true },
+  { id: 'p10', title: 'The Power of Forgiveness (Session 4)', leader: 'Pastor John Doe', church: 'Community Church', start: now - 70 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/new-study-forgiveness', attended: false },
+  { id: 'p11', title: 'Romans: Ch. 8 (Session 5)', leader: 'James Okafor', church: 'New Hope Bible', start: now - 77 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/caa0f611a74e28147eae9999eefcdad083e6b95c', attended: true },
+  { id: 'p12', title: 'The Power of Forgiveness (Session 5)', leader: 'Pastor John Doe', church: 'Community Church', start: now - 84 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/new-study-forgiveness', attended: false },
+  { id: 'p13', title: 'Understanding the Gospels', leader: 'Sister Jane Smith', church: 'First Baptist', start: now - 91 * DAY, notesUrl: 'https://www.bibledose.com/study/notes/gospels-overview', attended: true }
 ];
 
 // Mapa de escenarios —  cada entrada describe qué
