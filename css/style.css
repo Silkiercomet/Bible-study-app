@@ -1,66 +1,75 @@
+/* ============================================================
+   BIBLE DOSE — AUTH SCREENS · style.css
+   Shared across: login, forgot-password, recover-email,
+   reset-password (imported alongside screen-specific overrides)
+   ============================================================ */
+
+/* ── DESIGN TOKENS ───────────────────────────────────────── */
 :root {
-  /* Paleta de Colores Oficial del Proyecto */
-  --bg: #eef0f3;
-  --surface: #ffffff;
-  --navy: #2c3a5f; /* Azul Marino Principal */
-  --navy-dark: #142447; /* Azul Marino Oscuro */
-  --navy-mute: #8a92a8;
+  --bg:            #eef0f3;
+  --surface:       #ffffff;
 
-  --primary: #ff6600; /* Naranja Corporativo */
-  --primary-soft: rgba(255, 102, 0, 0.1);
+  /* Navy scale */
+  --navy:          #2c3a5f;
+  --navy-dark:     #142447;
+  --navy-mute:     #8a92a8;
+
+  /* Brand accent */
+  --primary:       #ff6600;
+  --primary-soft:  rgba(255, 102, 0, 0.10);
   --primary-hover: #e55c00;
+  --primary-disabled: #ffb680;   /* orange tint for disabled btn */
 
-  --secondary: #0FA8A8; 
-  --secondary-soft: rgba(15, 168, 168, 0.1);
-  --secondary-dark: #0B7E7E;
-  --border: #dde1e7;
-  --input-border: #ccd2db;
-  --shadow: rgba(44, 58, 95, 0.06);
+  /* Teal (success / secondary) */
+  --teal:          #0FA8A8;
+  --teal-soft:     rgba(15, 168, 168, 0.12);
+  --teal-dark:     #0B7E7E;
 
-  /* Alertas Rojas */
-  --danger: #D83232;
-  --danger-soft: rgba(231, 76, 60, 0.06);
+  /* Borders / shadows */
+  --border:        #dde1e7;
+  --input-border:  #ccd2db;
+  --shadow:        rgba(44, 58, 95, 0.07);
+
+  /* Danger */
+  --danger:        #D83232;
+  --danger-soft:   rgba(216, 50, 50, 0.06);
 }
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-html,
-body {
+
+/* ── RESET ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
   font-family: "Poppins", system-ui, sans-serif;
   background: var(--bg);
-  color: var(--midnight);
+  color: var(--navy);
   min-height: 100vh;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
+
+/* ── PAGE SHELL ──────────────────────────────────────────── */
 .page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
-input:focus{
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-soft);
 
-}
-/* ===== HERO ===== */
+/* ── HERO (topbar) ───────────────────────────────────────── */
 .hero {
   background: var(--navy-dark);
-  color: white;
-  padding: 12px 16px 26px;
+  color: #fff;
+  padding: 6px 28px;
 }
 .hero-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 0;
 }
 .back {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255,255,255,.75);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -68,69 +77,76 @@ input:focus{
   padding: 6px 4px;
   font-weight: 500;
   min-width: 60px;
+  transition: color .15s;
 }
-.hero-spacer {
-  min-width: 60px;
-}
+.back:hover { color: #fff; }
+.hero-spacer { min-width: 60px; }
 
-/* Centered logo slot — drop real logo in here */
 .logo-slot {
   display: flex;
   align-items: center;
   gap: 9px;
 }
 .logo-img {
-  max-height: 80px;
+  max-height: 50px;
   width: auto;
   display: block;
 }
 
-.hero-content {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-.pill-badge {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.85);
-  padding: 4px 12px;
-  border-radius: 100px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-.hero h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-}
-.hero p {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  max-width: 440px;
-}
-
-/* ===== CONTENT ===== */
+/* ── CONTENT AREA ────────────────────────────────────────── */
 .content {
   flex: 1;
-  padding: 26px 16px 32px;
+  padding: 26px 16px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
+/* ── AUTH CARD ───────────────────────────────────────────── */
 .auth-card {
   width: 100%;
   max-width: 420px;
   background: var(--surface);
   border-radius: 20px;
-  padding: 26px 22px;
-  box-shadow: 0 2px 14px var(--shadow);
+  padding: 28px 24px;
+  box-shadow: 0 2px 16px var(--shadow);
+  /* Orange top accent — matches modal aesthetic across the app */
+  border-top: 5px solid var(--primary);
 }
+
+/* Card heading area (lives inside card per scope) */
+.card-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.pill-badge {
+  display: inline-block;
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.card-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy-dark);
+  letter-spacing: -.01em;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+.card-header p {
+  font-size: 14px;
+  color: var(--navy-mute);
+  line-height: 1.55;
+}
+
+/* ── FORM FIELDS ─────────────────────────────────────────── */
+.field-block { margin-bottom: 16px; }
 
 .field-label {
   display: block;
@@ -140,7 +156,16 @@ input:focus{
   margin-bottom: 7px;
   text-align: left;
 }
-.email-input {
+.label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+.label-row .field-label { margin-bottom: 0; }
+
+/* Shared input style */
+.input-field {
   width: 100%;
   font-family: inherit;
   font-size: 15px;
@@ -148,27 +173,55 @@ input:focus{
   background: #fff;
   border: 1.5px solid var(--input-border);
   border-radius: 12px;
-  padding: 14px 14px;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
+  padding: 14px;
+  transition: border-color .15s, box-shadow .15s;
 }
-.email-input::placeholder {
-  color: var(--navy-mute);
-}
-.email-input:focus {
+.input-field::placeholder { color: var(--navy-mute); }
+.input-field:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-soft);
 }
-/* Inline error state — applied to inputs and shows the message below.
-     Self-clears as soon as the user starts typing (see <script> at bottom). */
-.email-input.error {
+
+/* Alias kept for existing HTML that uses .email-input or .pw-input */
+.email-input, .pw-input { }
+.email-input { @extend .input-field; }
+
+/* Input with inner icon button (password eye toggle) */
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-wrap .input-field {
+  padding-right: 46px;
+}
+.eye-btn {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--navy-mute);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color .15s;
+}
+.eye-btn:hover { color: var(--navy); }
+.eye-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Error state */
+.input-field.error,
+.email-input.error,
+.pw-input.error {
   border-color: var(--danger);
   background: var(--danger-soft);
 }
-.email-input.error:focus {
-  box-shadow: 0 0 0 3px rgba(216, 50, 50, 0.18);
+.input-field.error:focus,
+.email-input.error:focus,
+.pw-input.error:focus {
+  box-shadow: 0 0 0 3px rgba(216,50,50,.18);
 }
 .err-msg {
   display: none;
@@ -176,33 +229,303 @@ input:focus{
   color: var(--danger);
   margin-top: 6px;
   font-weight: 500;
-  text-align: left;
 }
-.field-block.invalid .err-msg {
-  display: block;
+.field-block.invalid .err-msg { display: block; }
+.field-block.invalid .input-field,
+.field-block.invalid .email-input,
+.field-block.invalid .pw-input {
+  border-color: var(--danger);
+  background: var(--danger-soft);
 }
-.field-block {
-  margin-bottom: 14px;
-}
-.label-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 7px;
-}
-.forgot-link {
+
+/* Forgot / secondary label links */
+.forgot-link, .show-link {
   font-size: 12px;
   color: var(--navy-mute);
+  font-weight: 500;
+  cursor: pointer;
+  text-underline-offset: 3px;
+  transition: color .2s;
+}
+.forgot-link {
   text-decoration: underline;
   text-decoration-color: var(--border);
-  text-underline-offset: 3px;
-  font-weight: 500;
-  transition: 300ms ease-in-out;
 }
-.forgot-link:hover {
+.show-link {
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+}
+.forgot-link:hover, .show-link:hover { color: var(--navy-dark); }
+
+/* ── BUTTONS ─────────────────────────────────────────────── */
+.btn-primary {
+  width: 100%;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--primary);
+  border: none;
+  border-radius: 12px;
+  padding: 15px;
+  cursor: pointer;
+  transition: background .15s, transform .1s, opacity .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.btn-primary:hover:not(:disabled)  { background: var(--primary-hover); }
+.btn-primary:active:not(:disabled) { transform: scale(.99); }
+
+/* Disabled state — grey until conditions met */
+.btn-primary:disabled,
+.btn-primary.disabled {
+  background: #c8cdd8;
+  color: #fff;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Loading state — spinner + label, prevents double-submit */
+.btn-primary.loading {
+  background: var(--primary-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+  gap: 10px;
+}
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid rgba(255,255,255,.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .65s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.btn-secondary {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy);
+  background: #fff;
+  border: 1.5px solid var(--input-border);
+  border-radius: 12px;
+  padding: 13px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  text-decoration: none;
+  text-align: center;
+  display: block;
+  margin-top: 8px;
+}
+.btn-secondary:hover { background: var(--bg); border-color: var(--navy-mute); }
+
+/* ── PASSWORD STRENGTH BAR ───────────────────────────────── */
+.strength-wrap {
+  margin: 8px 0 14px;
+}
+.strength-segments {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+.strength-seg {
+  flex: 1;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--border);
+  transition: background .25s;
+}
+.strength-seg.active-1 { background: var(--danger); }
+.strength-seg.active-2 { background: #ff8c00; }
+.strength-seg.active-3 { background: #e55c00; }
+.strength-seg.active-4 { background: var(--teal); }
+
+.strength-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--navy-mute);
+  text-align: right;
+  min-height: 14px;
+  transition: color .25s;
+}
+.strength-label.s1 { color: var(--danger); }
+.strength-label.s2 { color: #ff8c00; }
+.strength-label.s3 { color: #e55c00; }
+.strength-label.s4 { color: var(--teal-dark); }
+
+/* Password rule hint */
+.rules {
+  font-size: 12px;
+  color: var(--navy-mute);
+  margin: 2px 0 14px;
+  line-height: 1.6;
+}
+.rules .ok { color: var(--teal-dark); font-weight: 600; }
+
+/* ── INLINE CONFIRMATION STATE (Forgot PW / Account Lookup) ─ */
+/* Replaces form on neutral confirmation — never reveals account existence */
+.confirm-state {
+  display: none;
+  text-align: center;
+  padding: 8px 0;
+}
+.confirm-state.show { display: block; }
+.confirm-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--teal-soft);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16px;
+  font-size: 26px;
+}
+.confirm-state h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy-dark);
+  margin-bottom: 8px;
+}
+.confirm-state p {
+  font-size: 14px;
+  color: var(--navy-mute);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.try-again-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 0;
+  transition: color .15s;
+}
+.try-again-link:hover { color: var(--navy-dark); }
+
+/* ── SUCCESS STATE (Reset Password) ─────────────────────── */
+.success-state {
+  display: none;
+  text-align: center;
+  padding: 8px 0;
+}
+.success-state.show { display: block; }
+.success-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--teal-soft);
+  border: 2px solid rgba(15,168,168,.25);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  font-size: 28px;
+  color: var(--teal-dark);
+}
+.success-state h2 {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--navy-dark);
+  margin-bottom: 8px;
+}
+.success-state p {
+  font-size: 14px;
+  color: var(--navy-mute);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* ── EXPIRED LINK STATE (Reset Password) ────────────────── */
+.expired-state {
+  display: none;
+  text-align: center;
+  padding: 8px 0;
+}
+.expired-state.show { display: block; }
+.expired-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--danger-soft);
+  border: 2px solid rgba(216,50,50,.2);
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  font-size: 28px;
+}
+.expired-state h2 {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--navy-dark);
+  margin-bottom: 8px;
+}
+.expired-state p {
+  font-size: 14px;
+  color: var(--navy-mute);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* ── SUCCESS BANNER (login after reset) ─────────────────── */
+.success-banner {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 14px;
+  padding: 13px 16px;
+  background: var(--teal-soft);
+  border: 1px solid rgba(15,168,168,.3);
+  border-radius: 12px;
+  display: none;
+  align-items: center;
+  gap: 12px;
+}
+.success-banner.show { display: flex; }
+.sb-ic {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--teal-dark);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+.sb-text {
+  font-size: 13px;
+  line-height: 1.5;
   color: var(--navy-dark);
 }
-/* Subtle attempts warning shown after repeated failures (3+). */
+.sb-text strong { font-weight: 700; }
+
+/* ── NEUTRAL NOTICE (step separator) ───────────────────── */
+.neutral-notice {
+  background: #f0f4f8;
+  border-left: 4px solid var(--navy);
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--navy);
+  margin-bottom: 20px;
+  line-height: 1.55;
+}
+
+/* ── ATTEMPTS WARNING ────────────────────────────────────── */
 .attempts-note {
   display: none;
   margin-top: 10px;
@@ -210,145 +533,22 @@ input:focus{
   color: var(--navy-mute);
   text-align: center;
   padding: 8px 12px;
-  background: rgba(232, 105, 61, 0.08);
+  background: rgba(255,102,0,.08);
   border-radius: 8px;
 }
-.attempts-note.show {
-  display: block;
-}
+.attempts-note.show { display: block; }
 
-/* Success banner — shown atop the auth card after a successful action
-     (password reset, email verified, etc). Read from ?reset=success in URL. */
-.success-banner {
-  display: none;
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto 14px;
-  padding: 14px 16px;
-  background: var(--secondary-soft);
-  border: 1px solid rgba(44, 157, 150, 0.3);
-  border-radius: 12px;
-  display: none;
-  align-items: flex-start;
-  gap: 12px;
-}
-.success-banner.show {
-  display: flex;
-  align-items: center;
-}
-.success-banner .sb-ic {
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--secondary-dark);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  font-weight: 700;
-  margin-top: 1px;
-}
-.success-banner .sb-text {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--navy-dark);
-}
-.success-banner .sb-text strong {
-  font-weight: 700;
-}
-
-/* Primary magic-link button */
-.btn-primary {
-  width: 100%;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  color: white;
-  background: var(--primary);
-  border: none;
-  border-radius: 12px;
-  padding: 15px;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    transform 0.1s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-.btn-primary:hover {
-  background: var(--primary-hover);
-}
-.btn-primary:active {
-  transform: scale(0.99);
-}
-
-
-/* ===== FOOTER ===== */
-
+/* ── MISC CARD ELEMENTS ──────────────────────────────────── */
 .helper {
   font-size: 12px;
   color: var(--navy-mute);
-  margin-top: 10px;
+  margin-top: 12px;
   text-align: center;
-  line-height: 1.5;
+  line-height: 1.55;
 }
-
-/* Divider */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 22px 0;
-  color: var(--navy-mute);
-  font-size: 12px;
-  font-weight: 500;
-}
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-/* Google secondary button */
-.btn-google {
-  width: 100%;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--midnight);
-  background: #fff;
-  border: 1.5px solid var(--input-border);
-  border-radius: 12px;
-  padding: 14px;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    border-color 0.15s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-.btn-google:hover {
-  background: var(--bg);
-  border-color: var(--navy-mute);
-}
-.g-icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-/* Footer links inside card */
 .card-foot {
   margin-top: 22px;
-  padding-top: 18px;
+  padding-top: 16px;
   border-top: 1px solid var(--border);
   text-align: center;
   font-size: 14px;
@@ -361,140 +561,30 @@ input:focus{
   text-decoration-color: var(--border);
   text-underline-offset: 3px;
 }
-.card-foot .row + .row {
-  margin-top: 8px;
-}
+.card-foot .row + .row { margin-top: 8px; }
 
-
-.pill-badge {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.85);
-  padding: 4px 12px;
-  border-radius: 100px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-.hero h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-}
-.hero p {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  max-width: 440px;
-}
-.content {
-  flex: 1;
-  padding: 26px 16px 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-
-.btn-secondary {
-  width: 100%;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--navy-dark);
-  background: #fff;
-  border: 1.5px solid var(--input-border);
-  border-radius: 12px;
-  padding: 14px;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    border-color 0.15s;
-}
-.btn-secondary:hover {
-  background: var(--bg);
-  border-color: var(--navy-mute);
-}
-@media (min-width: 768px) {
-  .hero {
-    padding: 16px 40px 34px;
-  }
-  .hero h1 {
-    font-size: 26px;
-  }
-  .hero p {
-    font-size: 15px;
-  }
-  .pill-badge {
-    font-size: 11px;
-    padding: 5px 14px;
-  }
-  .content {
-    padding: 44px 24px 60px;
-  }
-}
-
-.auth-card {
-  width: 100%;
-  max-width: 440px;
-  background: var(--surface);
-  border-radius: 20px;
-  padding: 30px 24px;
-  box-shadow: 0 2px 14px var(--shadow);
+/* Small below-card link (e.g. "I remember it — sign in") */
+.below-card-link {
+  margin-top: 16px;
   text-align: center;
-}
-.icon-circle {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--secondary-soft);
-  display: grid;
-  place-items: center;
-  margin: 0 auto 18px;
-  font-size: 30px;
-}
-.auth-card h2 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.auth-card .sub {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--navy-mute);
-  line-height: 1.6;
 }
-.sent-to {
-  font-weight: 700;
-  color: var(--navy-dark);
-  margin-top: 6px;
-}
-.actions {
-  margin-top: 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.small-help {
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-  font-size: 12px;
-  color: var(--dark-navy);
-  line-height: 1.6;
-}
-.small-help a {
-  color: var(--navy-dark);
+.below-card-link a {
+  color: var(--navy);
   font-weight: 600;
   text-decoration: underline;
   text-decoration-color: var(--border);
   text-underline-offset: 3px;
 }
-/* ===== FORGOT PASSWORD SENT ===== */
 
-/* ===== FOOTER ===== */
+/* Multi-step sections */
+.step-section { display: none; }
+.step-section.active { display: block; }
+
+/* ── FOOTER ──────────────────────────────────────────────── */
 .footer {
-  padding: 20px;
+  padding: 18px 20px;
   font-size: 13px;
   color: var(--navy-mute);
   text-align: center;
@@ -504,30 +594,50 @@ input:focus{
   font-weight: 500;
   border-top: 1px solid var(--border);
 }
-.footer a {
+.footer a { color: var(--navy-mute); text-decoration: none; }
+.footer a:hover { color: var(--navy); }
+
+/* ── DIVIDER ─────────────────────────────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
   color: var(--navy-mute);
-  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+}
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
 }
 
-/* ===== DESKTOP ===== */
+/* ── ACCOUNT LOOKUP — email reveal ──────────────────────── */
+.email-box {
+  background: #f1f8f5;
+  border: 1.5px dashed #2c9d96;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy-dark);
+  margin: 16px 0 20px;
+  letter-spacing: .05em;
+  text-align: center;
+}
+.links-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (min-width: 768px) {
-  .hero {
-    padding: 16px 40px 34px;
-  }
-  .hero h1 {
-    font-size: 26px;
-  }
-  .hero p {
-    font-size: 15px;
-  }
-  .pill-badge {
-    font-size: 11px;
-    padding: 5px 14px;
-  }
-  .content {
-    padding: 44px 24px 60px;
-  }
-  .auth-card {
-    padding: 32px 30px;
-  }
+  .hero { padding: 6px 32px; }
+  .card-header h1 { font-size: 24px; }
+  .content { padding: 44px 24px 60px; }
+  .auth-card { padding: 32px 30px; }
 }

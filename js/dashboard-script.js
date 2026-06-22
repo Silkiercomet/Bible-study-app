@@ -1319,6 +1319,7 @@ function renderEmptyHistory() {
    Dos CTAs: Join as guest (primario) + Register (ghost).
    ───────────────────────────────────────────────── */
 function renderUnregistered() {
+  document.getElementById("historyPagination").classList.add("u-hidden");
   return `<div class="empty none" role="status">
     <div class="ic">${ICONS.home}</div>
     <h2>You're not in any studies yet</h2>

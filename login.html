@@ -3,54 +3,38 @@
   SCREEN: Login hub (participant). Entry point for unauthenticated users.
   STUBS / TODO:
     - Primary: email + password sign-in. POST /api/auth/login.
-      On 401 (wrong credentials): apply .invalid to both .field-block
-      elements + .error to both inputs + show #attemptsNote (after 3+
-      attempts). NO pop-up — inline only. Error self-clears on input.
-      Message is GENERIC by design (never reveal which field was wrong;
-      prevents account enumeration).
-    - Magic link: secondary. POST email -> check-email.html ALWAYS,
-      regardless of whether the email is in the system. Email content
-      branches server-side (see check-email.html, no-account-email.html).
-    - "Continue with Google": start OAuth. Existing user -> app-home.html;
-      new Google email -> signup-participant.html with email/name prefilled.
-    - "Forgot password?": link in the password field's label row. -> reset
-      flow (TBD, not built).
-    - "Change sign-in" href="#": point at home route.
-    - Lockout: server enforces after N failed attempts; UI just renders
-      the warning. Dev decides N (typical: 5 attempts / 15-min window).
-  Inline <style>; logo is base64 preview (see LOGO note).
+      On 401: apply .invalid to .field-block + .error to inputs + show
+      #attemptsNote after 3+ attempts. Error self-clears on input.
+      Message is GENERIC (never reveal which field was wrong).
+    - "Forgot password?" → forgot-password.html
+    - "Forgot email?" → recover-email.html
+    - "Create an account" → create-account.html (role picker)
+    - Success banner shown when loaded with ?reset=success
 -->
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bible Dose — Sign in</title>
-<link rel="stylesheet" href="css/style.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bible Dose — Sign in</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div class="page">
+
+    <!-- TOPBAR -->
     <div class="hero">
       <div class="hero-top">
         <a href="#" class="back">← Back</a>
-<!-- LOGO: replace src with hosted asset (SVG or 2x PNG, ~30px tall, transparent bg). Embedded base64 = preview only. -->
-        <div class="logo-slot" data-logo-placeholder="true">
+        <div class="logo-slot">
           <img class="logo-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANYAAABRCAYAAACuVlhOAAAACXBIWXMAAAsSAAALEgHS3X78AAAOX0lEQVR4nO2dC4xdRRnH59zH7t3FpexCGwFpiH1hqCnUCrVRChqxiCm2AS0JSCIPgxI1uDVEQis04INqENvgC3y0RkgaKChi1JbFEoMGqiQQqZIgKEUs21q2dPd2uz3+/9s5y91zZ+Y87p3du/r9ktt79zxmvnn85/HNnNNSGIZKEITmUppsAwThfxERliB4QIQlCB4QYQmCB0RYguABEZYgeECEJQgeEGEJggdEWILgARGWIHhAhCUIHhBhCYIHRFiC4AERliB4QIQlCB4QYU1Bgp07y+HChcOTbYdgR4Q1xQiq1VnqzDPvxM8LJ9sWwY4IawoRDA6erCqV7fhZnmxbBDcirClC8OKLFTVz5lYVBDNVGI4Ejz1WCpcuPTzZdglmRFhThZkz10NUi0Z/B0FRLV58Cn69MLlGCTZEWFOAYGTkQlUofHrcwVLpnUqE1bKIsFqc4I03ZqjOznvQSwXjThQKZ+PfhybHKiEJEVar09l5B0Q1w3Dm/RNui5AaEVYLgyHgh1WxeKnl9FnBwYNvDTs7/zWhRgmpKB08ePDESqWy0nSyUChsbDSCLOEfPnz4XTi2OH5dGIb/KBaLDQ97fIffTIJXXz1GzZhxl/2CoKAqlUvw69sTYc9UyrtWoNTW1nYSMmyD5XzDwsoSPgvOdC0K7wHVhPmE7/CbyowZN4y61l0EwSfVBAlrSuVdCyBDwRYkqFbfjhapN/nC4Izg8OElYan0+wkwS8iACKsVaWu7HaKppLq2WKQAjUNtYfIQYbUY6IHeA7GsyHDLRcHw8PywXH7Gm1FCZrwL69ChQ7sxNr/OdA7HfUc/9SgWv1a3ZuWCToxS6cv4dbEvk4TseBdWZ2fnK6oJTpD/B7R7/X05bl2JXmsBeq2nm26UkIvUwkLPM7dUKp2Fn9P495EjR57A308l3efDnR9z/e7H339sa2v7a56w8sSNDuVkfE6J4kde/GXfvn27pk+ffqChwAuFNbnuYw93tNfKMoQch6l8m5KmWBzFYvEkmHt6dIzu+pGRkecaKb89e/a8pbu7e15tudB+fqepo0nhoq69Q+l8ob34vJwUbqKwWJGQGT9DwufUHucwDhH8DQm4Buf7bPc3052PuC5DWJuQqHgco27f4eHhG3wIjBl8/PHHfxZx3xqPmzAvUAFpw92oJHflKUz0Vuejtzq7ATM511qIXmtnlptc5cs0Ic+v6+/v/zHSn8sonXdXoMJ/Lh5HBOIf/UZcNw4NDf1Qj3LS2n4t7Lwyfq52mpG1XNgAlMvlqxGu0zOLcNcPDg5+02SvU1gwZjmMedB2Hpk1Bwl7lBHg9+o0RucFcdyOzLImFPGvQMGtgM0XNXPBkoWHDH4yzbWw4Urk15WsILD1tkwRFQpfyGVgTeRonm9SGXqtpPI9alZhwwknnLAK+f9IVpNYQXHvL1hP0lzPhguV9NakMqRYEe5PYHuqtEblwnr62muv3ezqhdl4ox5tShluL+ztNdnrFBYudmZ6bQQw6O/N2KlhCT91ZaHNEMOiRoYAERQVwkklqlpYQVCI3Wkbm+DQodNUufzB7BbWsZxhhW1tzyVdiMpwbobyfS8/WQxh3qGCZs47QrvYU9rqE0WVpU5EsJ7i3m78vMp0HnF+xjG6skJ74+JqmvOCBqGF+s1EzXVccGiDVm1hI/MDtoppeyoTLERk9o5UvWe5fEUmT6A90gLCuh6/rnFdplv87zUcnwXOq9GS5847wvqE/Hs2Ps3QDYJRVBwp4Gs/fyM7V5kaA/ZeEH3dsFA3oplFFUFxId0nRcPCVMLiXApfXCeZ7mq5MC79qvK8WAlbHsfXHnzm24YYPM5xvWrAG4mKt9YSP+eVvZFg9Hj8iyyw+LW6R0gjmEvy2mngsmDv3t6wp+d12wXIm4+6hmdpy9tGR0fH9Y6wH0f+3U4HAMLugoAuZCNkuhbnKP65sWPGd31AcOfFRLgR8XyJowdDuB/C1zhhsTG22PsAwr41EiKFjfvXmfIF6V6ndG+YKCwYdzkC2hz9rSuScdzM7lm3Vqkmn1mJD/F06/Wo6VpOllVOYeneyljYw8PDH6ntlfXvq1AAyiQuzmNcvVZQrc5W7e2z8thpDjDoUMcdxzWte+yXBFbvY3xIo8v77rQC0+VvzDs6ERDOVZGzQtOHOvY0nVIGO+foMu6rOWzMK1z7tvix/v7+O9FALkqyWcdRV5/ZwGBO9onakQ9tQf24AOHujGuA5Y/038T67xQWJ3u1oiKsSKjgl9rmHu3t7e9WHjZlssDj3TcTqcfidV04E51X5D09PcZnnVgxbEPdwcFBZqjJO7VcufKjXD4nq32JBMHlyiIsnSfG3op5GW8EmF7c8zHcsztN1Lr8jaCSfp6exjisY8jbT5nEq3uovqR4KUyGgc93ufzBuqIFUTeCqn9m1NwLIqxbTNMJHkN97DXNUSuVygfwtdkpLLTO36crOw6NZpduGcOeUndDE7C1+nQFI6HGsTFd/fjKLCxHGno4wTWdQIbawqLYjJNlfcGZWe1LwTl88jg85ph/x0/oPDEyNDR0PwRUd5yNk+5t6hqOOLhmvuk4h1SuOS/O32vpFWfFrrvf5riInCyRq51x4rMtxZqrrRdcgHunmc4hjlMt95yrkoTlckTQ/WoRFhXbVO8gM8g2t2dh2USuF5GzrykdTYPp+Io83qgEmjcMjKATo6ODXsafxk+ZnqkiHPa4enec/1Ma/0oQvfCm/v5trvtZ+U1b3OL5jYZ0q6nXs9gyWl5RuNGaXFzgDqH25vAp9fCfRryC+xu4t9nsmWwDXGiPk03gJ3qJNAiWKIOwHEyJTbwUBeZ982zzfBecMnB0w/t9ea8jkcru9smnw1O4Z3gKd9KhKLicor2bxrmZC4pSxbyNzcYpLO0dM46LA8vcAF3+k81Ykonh7PttXTlseTZPZDoNdWHSmYNJ671Zw9N77mynfb2D3fj0sSNPjHOjrOghX13eJU0RHEPUx031SddLOtY20yHT3t7OvYKnM56k4Xrc22ibStAjTkeIKywT3PbmFJb2jtU5DbTgbBPZl7IakgQTbfPw6WGW8T5k3u6YazcttjR059nRkTAn8DWM7TYdtOVJkhfV1pDG4SZVy/0rEhrqVZYgn4h+0D6T8wVlMqBFws+oeF3rizq+09Wb3sZd+Bh7vbw7eJzCQiuyHpmxPZ4ZtsVTonea57HFSe3iW4TeQXCH7Z684+ihoaFtJu8YCwkF9nVTuLbtMCn2UT6Pz3l57ExgxHTQlSf6KYS6XoWVFPclegTJ3r17t9saEl1WdR5SvbnaWLFx7uGoIaAr27TepTcNjHvcpmZ9cV7SUBFxPIQ46tLH9T7Usa2mxsDmnYzWAZ3CYivGhTBEfAu7RL1SfpmtFWACPU4KuYmS7u4f6VX7k2Hbalum6Y2wueLS7uX1ph0BSN8uepe0a/qVaPe2bY8Zh462HnWUMPwDEnd1LkPdWF+LpvPGtCNhA87tr127zLrnT3tpjXmny3BefOeFbXM1PZW1i8O2Rpt1wLQQr3tIW/0Y80LyPsZlWPAdrf9cs9INxgH2mmzkbcPNqGFJdF4wcHw2pamkMPamnEOvVDAxtn1icfTjB7nj0o8D2LbabMC5USG5hnlcJkgcSlSrv0JTfGTURd5crF4+nTd1wiJ6oXWNvn8+7M/keSOuvKMIUIapnA36kaSxv9lo66WXujrAxdpo3UofmoayMaaRIoqXi46rbhePfoLjwaicXXWKDW7UuzXNK8hEuZ7LmkiYwEa3VfF+vf/MuGUqCfbeejuM+7qOjpeDMPw1fi7LE4/DgEeUxYnEtOmtasbHI3TLPU5Qtgm+LXy9/Sz3Rlz2qqb6pJ+5s607pVpnjAuW6F08xp48DXqX0tgw2iosVk4Yeaptg2Qs0FSVKC+s4LaNjwZbxiWwEZjZeSoIG5n4HjMnIyNfwSy5ecIKw9fVwMAWNc24aWAUvY1oQYbyvQDpGUhrAnuEvOtNruex2GvlDbcm7D7TOT5Dh3r/kq3BsWF6/i5pjrXatkGyJtDR52Z8iYqgYAdYsNFTvJZrEp9mzgMrCMbqXa55VI0NY0+qZsmPsFT6HXqt+5DhH2/Y4KOG3BZOm/afpMtYvrD3Ye4it1XSNA8H2oitN61JEoLriVxHuInrWKwb+HzLtOsiDhsczKO2cYd+UqPjfILY9halaHKnJ7Kb468YjvZfJc29srylSb+noO5ahqEz5DZk6J09PT2LgjffmzD2zouk+Z0tfP2aZOt9Om72ghv1extOCyzvvHA6KlwMDFyruroWobY3tsUpDHeoHTu+oZYuTXW5bojmxtPF9a5qtbqLlSZqJNiI1keXKu/G1pv0qxoW194fvfOC61Vp58W14da886IrqhfROy+icmHYaRs7LRR6clfrem9854XL3pLtLUrxSq8ne0/ZzicYmWpoFo+jJoyx3zpD+1TNjue07n1b+FnQXs9xns/o/RCNEB577L6gWl2GCLarvBuZw/AZdeDAijz/06MpXfFK0+gQW9cFfuJPKTQSbFQnojD7+E9UPxstl7x1RrY0tRBhe/vzweDgElWp3Kf3+mW4OfwtRLUq7Orq92SekAERVosRdnT8M9iy5Ry1cuXVENeNyvAA3/gbwt343KzWrftBuHbtkQkyU0hAhNWChBdfzF0T3wl27rxbLViwDOMaegy5pSjaCc9tUH/GROIR9cILvwxnz66qtdbNMMIkIMJqYcKFC7lB9+f6Uw/nJrNnT6hNQjpEWILgARGWIHhAhCUIHhBhCYIHRFiC4AERliB4QIQlCB4QYQmCB0RYguABEZYgeECEJQgeEGEJggdEWILgARGWIHhAhCUIHhBhCYIHRFiC4AERliB4QIQlCB4QYQmCB0RYguABEZYgeECEJQge+C8gQa7a2PoFHAAAAABJRU5ErkJggg==" alt="Bible Dose logo">
         </div>
         <div class="hero-spacer"></div>
       </div>
-      <!-- <div class="hero-content">
-        <div class="pill-badge">Welcome back</div>
-        <h1>Sign in</h1>
-        <p>Sign in with your email and password, or use a one-time link or Google.</p>
-      </div> -->
     </div>
 
     <div class="content">
-      <!-- Success banner: shown when login is loaded with ?reset=success
-           (after a successful password reset). Other states the dev may want
-           to add later: ?verified=email, ?signup=complete. -->
+      <!-- Success banner: ?reset=success after password reset -->
       <div class="success-banner" id="successBanner">
         <div class="sb-ic">✓</div>
         <div class="sb-text">
@@ -59,61 +43,55 @@
       </div>
 
       <div class="auth-card">
-        <!-- Email + password is now the primary login method. Magic link sits
-             below as a secondary option (still always sends an email, branched
-             by server-side existence check — see check-email.html). -->
-        <form id="loginForm">
-            <div class="field-block" id="emailBlock">
+        <!-- Heading lives in the card per scope -->
+        <div class="card-header">
+          <h1>Welcome back</h1>
+          <p>Sign in to your Bible Dose account.</p>
+        </div>
+
+        <form id="loginForm" novalidate>
+          <!-- Email -->
+          <div class="field-block" id="emailBlock">
             <div class="label-row">
-              <label class="field-label" for="password">Email address</label>
-              <!-- Forgot Password? Always visible (standard UX), not error-only.
-                  -> reset-password flow (TBD, not built yet). -->
+              <label class="field-label" for="email">Email address</label>
               <a class="forgot-link" href="recover-email.html">Forgot email?</a>
             </div>
-            <input class="email-input " id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" value="test@bibledose.com">
+            <input class="input-field" id="email" type="email" inputmode="email"
+                   autocomplete="email" placeholder="you@example.com">
             <div class="err-msg" id="emailErr">Incorrect email or password.</div>
           </div>
 
+          <!-- Password -->
           <div class="field-block" id="passwordBlock">
             <div class="label-row">
               <label class="field-label" for="password">Password</label>
-              <!-- Forgot Password? Always visible (standard UX), not error-only.
-                  -> reset-password flow (TBD, not built yet). -->
               <a class="forgot-link" href="forgot-password.html">Forgot password?</a>
             </div>
-            <input class="email-input " id="password" type="password" autocomplete="current-password" placeholder="••••••••" value="">
-            <!-- <div class="err-msg">&nbsp;</div> -->
+            <div class="input-wrap">
+              <input class="input-field" id="password" type="password"
+                     autocomplete="current-password" placeholder="••••••••">
+              <button class="eye-btn" id="eyePassword" type="button" aria-label="Show password">
+                <!-- Eye icon (closed by default) -->
+                <svg viewBox="0 0 24 24" aria-hidden="true" id="eyePasswordIcon">
+                  <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                  <line x1="2" y1="2" x2="22" y2="22"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
-          <button class="btn-primary" type="submit" id="signInBtn">Sign in</button>
+          <!-- Submit — disabled until valid email + any password -->
+          <button class="btn-primary" type="submit" id="signInBtn" disabled>
+            Sign in
+          </button>
 
-          <!-- Lockout warning after 3+ failed attempts. Server-driven; render
-              only when attempt count exceeds threshold. -->
-          <div class="attempts-note hidden" id="attemptsNote">
+          <!-- Lockout warning after 3+ failed attempts -->
+          <div class="attempts-note" id="attemptsNote">
             For your security, repeated incorrect attempts may temporarily lock the account.
           </div>
         </form>
 
-        <!-- 
-        <div class="divider">or</div>
-
-        Magic link: POST email -> check-email.html ALWAYS. Branch is in the email content, not on screen. 
-        <button class="btn-google" id="magicLinkBtn">
-          <span style="font-size:16px;">✦</span> Email me a sign-in link
-        </button>
-
-         Google OAuth. Official "G" mark, do not recolor. New email -> signup-participant.html prefilled. 
-        <button class="btn-google" style="margin-top:10px;">
-          <svg class="g-icon" viewBox="0 0 48 48" aria-hidden="true">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          Continue with Google
-        </button> -->
-
-        <!-- create-account.html = role picker. "Change sign-in" href="#" -> home route. -->
         <div class="card-foot">
           <div class="row">New here? <a href="create-account.html">Create an account</a></div>
         </div>
@@ -126,12 +104,7 @@
       <a href="#">Help</a>
     </div>
   </div>
-<script>
-  // Success banner driven by URL params. Examples:
-  //   /login.html?reset=success     -> "Password updated"
-  // Dev: add other states later (verified=email, signup=complete, etc.).
-  
-</script>
-<script src="js/login-script.js"></script>
+
+  <script src="js/login-script.js"></script>
 </body>
 </html>

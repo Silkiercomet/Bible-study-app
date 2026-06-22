@@ -1,83 +1,132 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // 1. Configuración de credenciales de prueba para tu simulación frontend
-  const MOCK_USER = {
-    email: "test@bibledose.com",
-    password: "Password123"
-  };
+/* login-script.js
+   Handles: disabled button logic, email blur validation, show/hide password,
+   loading state on submit, inline error display, success banner from ?reset=success.
+*/
 
-  // Contador local para manejar la advertencia de intentos repetidos
+document.addEventListener('DOMContentLoaded', () => {
+  // ─── Mock credentials (frontend simulation only) ────────────────────────
+  const MOCK_USER = { email: 'test@bibledose.com', password: 'Password123' };
   let failedAttempts = 0;
 
-  // 2. Procesar parámetros de URL de éxito previos (Mantenido de tu plantilla)
+  // ─── Elements ───────────────────────────────────────────────────────────
+  const emailInput    = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const signInBtn     = document.getElementById('signInBtn');
+  const emailBlock    = document.getElementById('emailBlock');
+  const loginForm     = document.getElementById('loginForm');
+  const attemptsNote  = document.getElementById('attemptsNote');
+  const eyeBtn        = document.getElementById('eyePassword');
+  const eyeIcon       = document.getElementById('eyePasswordIcon');
+
+  // ─── Success banner from ?reset=success ─────────────────────────────────
   const qs = new URLSearchParams(location.search);
   if (qs.get('reset') === 'success') {
     const banner = document.getElementById('successBanner');
     if (banner) banner.classList.add('show');
-    clearAllErrors();
   }
 
-  // 3. Capturar el evento de envío del formulario
-  const loginForm = document.getElementById('loginForm');
+  // ─── Show / hide password toggle ────────────────────────────────────────
+  if (eyeBtn) {
+    eyeBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      // Toggle eye icon: show line-through when revealed
+      eyeIcon.innerHTML = isPassword
+        ? '<path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>'
+        : '<path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/><line x1="2" y1="2" x2="22" y2="22"/>';
+      eyeBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+    });
+  }
+
+  // ─── Email format validation (@ + .domain) ──────────────────────────────
+  function isValidEmail(val) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
+  }
+
+  // Blur: show format error if invalid
+  emailInput.addEventListener('blur', () => {
+    const val = emailInput.value.trim();
+    if (val && !isValidEmail(val)) {
+      emailBlock.classList.add('invalid');
+      const errEl = emailBlock.querySelector('.err-msg');
+      if (errEl) errEl.textContent = 'Please enter a valid email address.';
+    }
+  });
+
+  // ─── Enable / disable submit button ─────────────────────────────────────
+  function updateButtonState() {
+    const emailReady    = isValidEmail(emailInput.value);
+    const passwordReady = passwordInput.value.length > 0;
+    signInBtn.disabled  = !(emailReady && passwordReady);
+  }
+
+  emailInput.addEventListener('input', () => {
+    emailInput.classList.remove('error');
+    emailBlock.classList.remove('invalid');
+    updateButtonState();
+  });
+  passwordInput.addEventListener('input', () => {
+    passwordInput.classList.remove('error');
+    document.getElementById('passwordBlock').classList.remove('invalid');
+    updateButtonState();
+  });
+
+  // ─── Form submit ─────────────────────────────────────────────────────────
   if (loginForm) {
-    loginForm.addEventListener('submit', function (event) {
-      event.preventDefault(); // Evitamos que la página se recargue automáticamente
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-      // Obtener los valores actuales de los inputs de texto
-      const emailValue = document.getElementById('email').value.trim();
-      const passwordValue = document.getElementById('password').value;
+      const emailVal    = emailInput.value.trim();
+      const passwordVal = passwordInput.value;
 
-      // --- SIMULACIÓN DE POST REQUEST ---
-      console.log("POST /api/auth/login", { email: emailValue });
+      // Loading state
+      setLoading(true);
 
-      // Validación de credenciales
-      if (emailValue === MOCK_USER.email && passwordValue === MOCK_USER.password) {
-        // CASO DE ÉXITO: Redirigir al dashboard según el requerimiento
-        console.log("Login exitoso. Redirigiendo...");
-        window.location.href = "dashboard.html"; 
+      // Simulate POST /api/auth/login (replace with real fetch in production)
+      await fakeDelay(900);
+
+      if (emailVal === MOCK_USER.email && passwordVal === MOCK_USER.password) {
+        // Success → navigate to dashboard
+        window.location.href = 'dashboard.html';
       } else {
-        // CASO DE ERROR: Credenciales incorrectas
+        setLoading(false);
         failedAttempts++;
         triggerLoginError();
       }
     });
   }
 
-  // 4. Función para activar los estados visuales de error requeridos
+  // ─── Helpers ─────────────────────────────────────────────────────────────
+  function setLoading(on) {
+    if (on) {
+      signInBtn.disabled = true;
+      signInBtn.classList.add('loading');
+      signInBtn.innerHTML = '<span class="btn-spinner"></span> Signing in…';
+    } else {
+      signInBtn.classList.remove('loading');
+      signInBtn.innerHTML = 'Sign in';
+      updateButtonState();
+    }
+  }
+
   function triggerLoginError() {
-    // Aplicar clase .invalid a los contenedores de los bloques
-    document.getElementById('emailBlock').classList.add('invalid');
+    emailBlock.classList.add('invalid');
     document.getElementById('passwordBlock').classList.add('invalid');
+    emailInput.classList.add('error');
+    passwordInput.classList.add('error');
 
-    // Aplicar clase .error directamente a los inputs de texto (Bordes rojos inline)
-    document.getElementById('email').classList.add('error');
-    document.getElementById('password').classList.add('error');
+    const errEl = emailBlock.querySelector('.err-msg');
+    if (errEl) errEl.textContent = 'Incorrect email or password.';
 
-    // Mostrar advertencia sutil de intentos si supera o iguala el umbral de 3 fallos
-    if (failedAttempts >= 3) {
-      document.getElementById('attemptsNote').classList.add('show');
+    if (failedAttempts >= 3 && attemptsNote) {
+      attemptsNote.classList.add('show');
     }
   }
 
-  // 5. Limpieza automática de errores en tiempo real cuando el usuario escribe
-  ['email', 'password'].forEach(function (id) {
-    const input = document.getElementById(id);
-    if (input) {
-      input.addEventListener('input', function () {
-        // Remover el borde rojo del campo actual
-        input.classList.remove('error');
-        
-        // Remover el mensaje de error del bloque contenedor correspondiente
-        const block = input.closest('.field-block');
-        if (block) block.classList.remove('invalid');
-      });
-    }
-  });
-
-  // Función auxiliar global para limpiar la UI por completo
-  function clearAllErrors() {
-    document.querySelectorAll('.field-block').forEach(b => b.classList.remove('invalid'));
-    document.querySelectorAll('.email-input').forEach(i => i.classList.remove('error'));
-    const notes = document.getElementById('attemptsNote');
-    if (notes) notes.classList.remove('show');
+  function fakeDelay(ms) {
+    return new Promise(res => setTimeout(res, ms));
   }
+
+  // Initial state
+  updateButtonState();
 });

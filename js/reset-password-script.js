@@ -1,78 +1,158 @@
+/* reset-password-script.js
+   Handles: token detection, show/hide password on both fields,
+   strength bar (4 segments, informational only), disabled button
+   until 8+ chars AND passwords match, inline error on mismatch,
+   loading state, success/expired state transitions.
+*/
+
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Emulación de Captura de Token de URL (?token=xyz)
-    const urlParams = new URLSearchParams(window.location.search);
-    const resetToken = urlParams.get('token') || "MOCK_DEVELOPMENT_TOKEN";
-    console.log("Token detectado para validación de backend:", resetToken);
+  // ─── Token from URL (?token=...) ──────────────────────────────────────
+  const urlParams  = new URLSearchParams(window.location.search);
+  const resetToken = urlParams.get('token') || 'MOCK_DEVELOPMENT_TOKEN';
 
-    const newPw = document.getElementById('newPw');
-    const confirmPw = document.getElementById('confirmPw');
-    const newBlock = document.getElementById('newBlock');
-    const confirmBlock = document.getElementById('confirmBlock');
-    const ruleLen = document.getElementById('ruleLen');
-    const resetForm = document.getElementById('resetForm');
+  // Simulate expired-link state for ?expired=true (dev/test use)
+  if (urlParams.get('expired') === 'true') {
+    showState('expired');
+    return;
+  }
 
-    // 2. Control de visibilidad "Show/Hide" (Refactorizado limpio)
-    ['showNew', 'showConfirm'].forEach(function(btnId) {
-      const btn = document.getElementById(btnId);
-      const input = (btnId === 'showNew') ? newPw : confirmPw;
-      if (btn && input) {
-        btn.addEventListener('click', function() {
-          const isText = input.type === 'text';
-          input.type = isText ? 'password' : 'text';
-          btn.textContent = isText ? 'Show' : 'Hide';
+  // ─── Elements ─────────────────────────────────────────────────────────
+  const newPw        = document.getElementById('newPw');
+  const confirmPw    = document.getElementById('confirmPw');
+  const newBlock     = document.getElementById('newBlock');
+  const confirmBlock = document.getElementById('confirmBlock');
+  const submitBtn    = document.getElementById('submitBtn');
+  const resetForm    = document.getElementById('resetForm');
+
+  // Strength bar
+  const segs         = [1,2,3,4].map(n => document.getElementById('seg' + n));
+  const strengthLbl  = document.getElementById('strengthLabel');
+
+  const LABELS  = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  const CLASSES = ['', 's1', 's2', 's3', 's4'];
+
+  // ─── Show / hide password toggles ─────────────────────────────────────
+  setupToggle('showNew',     'eyeNew',     newPw);
+  setupToggle('showConfirm', 'eyeConfirm', confirmPw);
+
+  function setupToggle(btnId, eyeId, input) {
+    const btn = document.getElementById(btnId);
+    const eye = document.getElementById(eyeId);
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      btn.textContent = isHidden ? 'Hide' : 'Show';
+      if (eye) {
+        eye.innerHTML = isHidden
+          ? '<path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>'
+          : '<path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/><line x1="2" y1="2" x2="22" y2="22"/>';
+        eye.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+      }
+    });
+  }
+
+  // ─── Password strength calculation (4 conditions) ─────────────────────
+  function getStrength(pw) {
+    let score = 0;
+    if (pw.length >= 8)       score++;
+    if (/[A-Z]/.test(pw))    score++;
+    if (/[0-9]/.test(pw))    score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    return score; // 0–4
+  }
+
+  function updateStrengthBar(pw) {
+    const score = pw.length === 0 ? 0 : Math.max(1, getStrength(pw));
+    segs.forEach((seg, i) => {
+      seg.className = 'strength-seg';
+      if (pw.length > 0 && i < score) seg.classList.add('active-' + score);
+    });
+    strengthLbl.textContent = pw.length > 0 ? LABELS[score] : '';
+    strengthLbl.className   = 'strength-label' + (pw.length > 0 ? ' ' + CLASSES[score] : '');
+  }
+
+  // ─── Enable / disable submit button ───────────────────────────────────
+  function updateSubmitState() {
+    const pw      = newPw.value;
+    const confirm = confirmPw.value;
+    // Strength bar does NOT gate — only 8+ chars AND match required
+    submitBtn.disabled = !(pw.length >= 8 && pw === confirm && confirm.length > 0);
+  }
+
+  // ─── New password input ───────────────────────────────────────────────
+  newPw.addEventListener('input', () => {
+    newPw.classList.remove('error');
+    newBlock.classList.remove('invalid');
+    updateStrengthBar(newPw.value);
+    updateSubmitState();
+  });
+
+  // ─── Confirm password input ───────────────────────────────────────────
+  confirmPw.addEventListener('input', () => {
+    confirmPw.classList.remove('error');
+    confirmBlock.classList.remove('invalid');
+    updateSubmitState();
+  });
+
+  // ─── Form submit ──────────────────────────────────────────────────────
+  if (resetForm) {
+    resetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const pw      = newPw.value;
+      const confirm = confirmPw.value;
+      let valid     = true;
+
+      if (pw.length < 8) {
+        newBlock.classList.add('invalid');
+        newPw.classList.add('error');
+        valid = false;
+      }
+      if (pw !== confirm || !confirm) {
+        confirmBlock.classList.add('invalid');
+        confirmPw.classList.add('error');
+        valid = false;
+      }
+      if (!valid) return;
+
+      // Loading state
+      setLoading(true);
+
+      try {
+        // STUB: POST /api/auth/reset { token, new_password }
+        await fetch('/api/auth/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: resetToken, new_password: pw })
         });
+        // On success → show success state
+        setLoading(false);
+        showState('success');
+      } catch (_) {
+        // Network error: re-enable form
+        setLoading(false);
       }
     });
+  }
 
-    // 3. Regla en tiempo real para longitud mínima
-    newPw.addEventListener('input', function() {
-      if (newPw.value.length >= 8) {
-        ruleLen.textContent = '✓ 8+ characters';
-        ruleLen.classList.add('ok');
-      } else {
-        ruleLen.textContent = '○ 8+ characters';
-        ruleLen.classList.remove('ok');
-      }
-      newPw.classList.remove('error');
-      newBlock.classList.remove('invalid');
-    });
+  // ─── State switcher ───────────────────────────────────────────────────
+  function showState(which) {
+    document.getElementById('stateForm').style.display    = which === 'form'    ? '' : 'none';
+    document.getElementById('stateSuccess').style.display = which === 'success' ? '' : 'none';
+    document.getElementById('stateExpired').style.display = which === 'expired' ? '' : 'none';
+  }
 
-    // 4. Limpieza interactiva cuando el usuario intenta corregir la coincidencia
-    confirmPw.addEventListener('input', function() {
-      confirmPw.classList.remove('error');
-      confirmBlock.classList.remove('invalid');
-    });
-
-    // 5. Manejo del envío del formulario (Captura evento Submit)
-    if (resetForm) {
-      resetForm.addEventListener('submit', function(event) {
-        event.preventDefault(); // Detiene recarga
-        
-        let isValid = true;
-        const passwordValue = newPw.value;
-        const confirmValue = confirmPw.value;
-
-        // Validación de Longitud (Mantenida de la plantilla base)
-        if (passwordValue.length < 8) {
-          newPw.classList.add('error');
-          newBlock.classList.add('invalid');
-          isValid = false;
-        }
-
-        // Validación Crítica del Scope: Coincidencia de Contraseñas (Mismatch)
-        if (confirmValue !== passwordValue || !confirmValue) {
-          confirmPw.classList.add('error');
-          confirmBlock.classList.add('invalid');
-          isValid = false;
-        }
-
-        if (isValid) {
-          // --- SIMULACIÓN DE POST REQUEST ---
-          console.log("POST /api/auth/reset", { token: resetToken, new_password: passwordValue });
-          
-          // Redirección exitosa con parámetro esperado por login.html
-          window.location.href = 'login.html?reset=success';
-        }
-      });
+  // ─── Helpers ──────────────────────────────────────────────────────────
+  function setLoading(on) {
+    if (on) {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('loading');
+      submitBtn.innerHTML = '<span class="btn-spinner"></span> Saving…';
+    } else {
+      submitBtn.classList.remove('loading');
+      submitBtn.innerHTML = 'Reset password';
+      updateSubmitState();
     }
-})
+  }
+});
