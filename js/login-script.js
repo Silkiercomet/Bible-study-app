@@ -53,22 +53,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ─── Enable / disable submit button ─────────────────────────────────────
-  function updateButtonState() {
-    const emailReady    = isValidEmail(emailInput.value);
-    const passwordReady = passwordInput.value.length > 0;
-    signInBtn.disabled  = !(emailReady && passwordReady);
-  }
+
 
   emailInput.addEventListener('input', () => {
     emailInput.classList.remove('error');
-    emailBlock.classList.remove('invalid');
-    updateButtonState();
+    emailBlock.classList.remove('invalid')
   });
   passwordInput.addEventListener('input', () => {
     passwordInput.classList.remove('error');
-    document.getElementById('passwordBlock').classList.remove('invalid');
-    updateButtonState();
+    document.getElementById('passwordBlock').classList.remove('invalid')
   });
 
   // ─── Form submit ─────────────────────────────────────────────────────────
@@ -88,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (emailVal === MOCK_USER.email && passwordVal === MOCK_USER.password) {
         // Success → navigate to dashboard
         window.location.href = 'dashboard.html';
+        setLoading(false);
       } else {
         setLoading(false);
         failedAttempts++;
@@ -99,13 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ─── Helpers ─────────────────────────────────────────────────────────────
   function setLoading(on) {
     if (on) {
-      signInBtn.disabled = true;
       signInBtn.classList.add('loading');
       signInBtn.innerHTML = '<span class="btn-spinner"></span> Signing in…';
     } else {
       signInBtn.classList.remove('loading');
       signInBtn.innerHTML = 'Sign in';
-      updateButtonState();
     }
   }
 
@@ -120,6 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (failedAttempts >= 3 && attemptsNote) {
       attemptsNote.classList.add('show');
+    }
+    if (failedAttempts === 5 && attemptsNote) {
+      signInBtn.disabled  = true;
+      attemptsNote.textContent = 'Too many failed attempts. Please recover your password to continue.';
     }
   }
 
