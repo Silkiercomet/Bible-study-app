@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BibleDose — Join Flow</title>
+  <meta name="description" content="BibleDose group join flow — all 13 scenarios, 14 modals.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/modal-flow-style.css">
+
+  <style>
+    /* Page placeholder — replace with real app shell */
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--page);
+    }
+
+    .page-placeholder {
+      text-align: center;
+      color: var(--bg-base);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .page-placeholder h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .page-placeholder p {
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 340px;
+      margin: 0 auto;
+    }
+
+    .page-placeholder .hint {
+      display: inline-block;
+      margin-top: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--bg-light);
+      background: var(--bg-tint);
+      padding: 6px 14px;
+      border-radius: 99px;
+    }
+
+    .page-placeholder .arrow-left {
+      display: inline-block;
+      animation: nudge 1.4s ease-in-out infinite;
+      margin-right: 4px;
+    }
+
+    @keyframes nudge {
+      0%, 100% { transform: translateX(0); }
+      50%       { transform: translateX(-5px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── App shell (replace with your real page content) ── -->
+  <main class="page-placeholder" aria-label="BibleDose app">
+    <h1>BibleDose</h1>
+    <p>Hover the left edge to open the <strong>Dev Panel</strong> and test all join flow scenarios and modals.</p>
+    <span class="hint"><span class="arrow-left" aria-hidden="true">←</span> Open dev panel</span>
+  </main>
+
+  <!-- ── Scripts ── -->
+  <!--
+    Load order matters:
+    1. modal-flow-script.js  — core flow engine + modal renderer
+    2. modal-flow-dev.js     — dev panel (remove in production)
+  -->
+  <script src="./js/modal-flow-script.js"></script>
+  <script src="./js/modal-flow-dev.js"></script>
+
+</body>
+</html>
