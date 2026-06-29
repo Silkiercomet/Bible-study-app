@@ -395,6 +395,15 @@ function isValidPhone(v) {
   return (v || '').replace(/\D/g, '').length === 10;
 }
 
+/* URL válida de bibledose.app — usada por los modales Join y Register */
+function validBibleDoseUrl(v) {
+  try {
+    const str = (v || '').trim();
+    const url = new URL(str.startsWith('http') ? str : 'https://' + str);
+    return (url.hostname === 'bibledose.app' || url.hostname.endsWith('.bibledose.app')) && url.pathname.length > 1;
+  } catch { return false; }
+}
+
 /* Aplica auto-formato de teléfono a un <input> en vivo,
    preservando la posición del cursor al final del valor. */
 function attachPhoneFormatter(input) {
@@ -611,13 +620,13 @@ function invitePanel(id) {
 function openInviteModal(id) {
   const p = state.popover; // { id, copied, sent }
 
-  // Col izquierda — Share link
+  // Col izquierda — Share link (centered vertically & horizontally per Item 2/Invite)
   const leftCol = p.copied
-    ? `<div class="inv-col"><h3>Share link</h3><div class="inv-copied">✓ Link copied!</div></div>`
-    : `<div class="inv-col">
+    ? `<div class="inv-col inv-col--centered"><h3>Share link</h3><div class="inv-copied">✓ Link copied!</div></div>`
+    : `<div class="inv-col inv-col--centered">
          <h3>Share link</h3>
-         <p>Send this link to anyone you'd like to invite to the study.</p>
-         <button class="btn btn-secondary btn--inv-copy" type="button" data-inv="sharelink" data-id="${id}">
+         <p class="share-sub">Send this link to anyone you'd like to invite to the study.</p>
+         <button class="btn btn-secondary btn--inv-copy copy-btn" type="button" data-inv="sharelink" data-id="${id}">
            ${ICONS.link} Copy link
          </button>
        </div>`;
@@ -653,17 +662,28 @@ function openInviteModal(id) {
          <p class="inv-note">* First name and email or phone required</p>
        </div>`;
 
-  const html = buildModalShell({
-    id:             'invBackdrop',
-    accent:         'teal-border',
-    title:          'Invite guest',
-    bodyHtml:       leftCol + rightCol,
-    submitLabel:    'Send invitation',
-    submitId:       'invSubmitBtn',
-    submitDisabled: true,
-    formId:         'formInviteGuest',
-    closeFn:        'closeInviteModal'
-  });
+  const html = `
+    <div class="inv-backdrop" id="invBackdrop" role="dialog" aria-modal="true" aria-label="Invite guest">
+      <div class="inv-modal split-modal modal-invite-teal">
+        <div class="modal-inner">
+          <div class="split-modal-header">
+            <span class="split-modal-title">Invite guest</span>
+            <button class="inv-close" type="button" data-close-modal="closeInviteModal" aria-label="Close Invite guest">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <form id="formInviteGuest" novalidate class="split-modal-form">
+            <div class="inv-body">${leftCol}${rightCol}</div>
+            <div class="split-modal-footer">
+              <button type="button" class="btn btn-secondary" data-close-modal="closeInviteModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="invSubmitBtn" disabled>Send invitation</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>`;
 
   document.getElementById('inv-modal-root').innerHTML = html;
 
@@ -705,13 +725,11 @@ function openShareModal(sessionId) {
   state.share = { ...s, sessionId };
 
   const leftCol = state.share.copied
-    ? `<div class="inv-col"><h3>Share link</h3><div class="inv-copied" role="status">✓ Link copied!</div></div>`
-    : `<div class="inv-col">
+    ? `<div class="inv-col inv-col--centered"><h3>Share link</h3><div class="inv-copied" role="status">✓ Link copied!</div></div>`
+    : `<div class="inv-col inv-col--centered">
          <h3>Share link</h3>
-         <p>This link points to the read-only study notes for this session.</p>
-         <label class="u-sr-only" for="shareUrlField">Study notes URL</label>
-         <input class="inv-field share-url-field" id="shareUrlField" type="text" value="${url}" readonly>
-         <button class="btn btn-secondary btn--inv-copy"
+         <div class="link-box">${url}</div>
+         <button class="btn btn-secondary btn--inv-copy copy-btn"
                  id="shareCopyBtn" type="button">
            ${ICONS.link} Copy link
          </button>
@@ -746,17 +764,28 @@ function openShareModal(sessionId) {
          <p class="inv-note">* First name and email or phone required</p>
        </div>`;
 
-  const html = buildModalShell({
-    id:             'shareBackdrop',
-    accent:         'teal-border',
-    title:          'Share study',
-    bodyHtml:       leftCol + rightCol,
-    submitLabel:    'Send study link',
-    submitId:       'shareSubmitBtn',
-    submitDisabled: true,
-    formId:         'formShare',
-    closeFn:        'closeShareModal'
-  });
+  const html = `
+    <div class="inv-backdrop" id="shareBackdrop" role="dialog" aria-modal="true" aria-label="Share study">
+      <div class="inv-modal split-modal modal-share-teal">
+        <div class="modal-inner">
+          <div class="split-modal-header">
+            <span class="split-modal-title">Share study</span>
+            <button class="inv-close" type="button" data-close-modal="closeShareModal" aria-label="Close Share study">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <form id="formShare" novalidate class="split-modal-form">
+            <div class="inv-body">${leftCol}${rightCol}</div>
+            <div class="split-modal-footer">
+              <button type="button" class="btn btn-secondary" data-close-modal="closeShareModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="shareSubmitBtn" disabled>Send study link</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>`;
 
   document.getElementById('share-modal-root').innerHTML = html;
 
@@ -837,126 +866,167 @@ function checkInviteForm(_id) {
 }
 
 /* ═════════════════════════════════════════════════
-   JOIN A DIFFERENT STUDY MODAL
+   JOIN A DIFFERENT STUDY MODAL — v2 (3v2 design)
    ═════════════════════════════════════════════════
-   Header con banda naranja sólida (regla global).
-   PANEL IZQUIERDO — Join code: input monoespaciado +
-     debounce 900ms + QR (si hay cámara) → bloque de
-     confirmación rígido (Study / Church / Session time).
-   PANEL DERECHO — Room Details: Room ID + Room Passcode,
-     usados solo si NO se confirmó código/QR.
-   SUBMIT ("Join study") — habilitado si código/QR
-     confirmado, O si Room ID + Passcode están llenos.
+   Outer container: orange sólido (modal-join-solid).
+   PANEL IZQUIERDO — Solo QR scan (sin code input).
+   PANEL DERECHO   — URL field (bibledose.app domain).
+   SUBMIT — habilitado si QR válido O URL válida.
+   Confirmación full-width al validar.
    ───────────────────────────────────────────────── */
-let _joinDebounceTimer = null;
+let _joinUrlTimer = null;
 
 async function openJoinModal() {
   state.join = state.join || {
-    codeValue: '', codeInvalid: false, confirmed: null,
-    camera: null, qrInvalid: false,
-    roomId: '', roomPasscode: ''
+    urlValue: '', urlInvalid: false, urlChecking: false, confirmed: null,
+    camera: null, qrInvalid: false
   };
-
   renderJoinModal();
-  // La cámara ya NO se solicita automáticamente al abrir el
-  // modal — solo se pide cuando el usuario hace tap en el
-  // qr-box (ver startJoinQrScan()).
 }
 
 function renderJoinModal() {
   const st = state.join;
   if (!st) return;
 
-  const leftCol = codePanel('join', st);
+  // ── Left column: QR scan only ────────────────────────────────
+  let qrSection;
+  if (st.qrInvalid) {
+    qrSection = `
+      <div class="qr-box qr-box--invalid" role="button" tabindex="0"
+           aria-label="QR code not recognized, tap to try again"
+           onclick="startJoinQrScan()">
+        <span class="qr-box-msg">QR code not recognized. Tap to try again.</span>
+      </div>`;
+  } else if (st.camera === true) {
+    qrSection = `
+      <div class="qr-box" aria-live="polite">
+        <div class="qr-scan-line"></div>
+        <span class="qr-box-msg">Point your camera at the QR code</span>
+      </div>`;
+  } else if (st.camera === 'denied') {
+    qrSection = `<p class="code-camera-msg">Camera access denied. Please allow camera access and try again.</p>`;
+  } else {
+    qrSection = `
+      <div class="qr-box qr-box--idle" id="joinQrBox" role="button" tabindex="0"
+           aria-label="Tap to scan QR code" onclick="startJoinQrScan()">
+        <div class="qr-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40">
+            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+            <rect x="5" y="5" width="3" height="3" fill="currentColor" stroke="none"></rect>
+            <rect x="16" y="5" width="3" height="3" fill="currentColor" stroke="none"></rect>
+            <rect x="5" y="16" width="3" height="3" fill="currentColor" stroke="none"></rect>
+            <path d="M14 14h2v2h-2zM18 14h3M18 18h3M14 18v3M16 20h2"></path>
+          </svg>
+        </div>
+        <div class="qr-lbl">Tap to scan QR code</div>
+        <div class="qr-sub">Point your camera at a QR code</div>
+      </div>`;
+  }
 
-  const roomDisabled = !!st.confirmed;
-  const rightCol = `<div class="inv-col">
-    <h3>Room details</h3>
-    <p>Use these only if you don't have a join code or QR.</p>
-    <label class="u-sr-only" for="joinRoomId">Room ID</label>
-    <input class="inv-field" id="joinRoomId" placeholder="Room ID *"
-           value="${st.roomId || ''}" ${roomDisabled ? 'disabled' : ''}
-           oninput="onJoinFieldInput()">
-    <label class="u-sr-only" for="joinRoomPasscode">Room passcode</label>
-    <input class="inv-field" id="joinRoomPasscode" placeholder="Room passcode *"
-           type="password" value="${st.roomPasscode || ''}" ${roomDisabled ? 'disabled' : ''}
-           oninput="onJoinFieldInput()">
+  const leftCol = `<div class="inv-col">
+    <h3>Scan QR code</h3>
+    ${qrSection}
   </div>`;
 
-  const codeConfirmed = !!st.confirmed;
-  const roomFilled     = !!(st.roomId?.trim() && st.roomPasscode?.trim());
-  const canSubmit       = codeConfirmed || roomFilled;
+  // ── Right column: URL field ──────────────────────────────────
+  const urlError = st.urlInvalid
+    ? `<p class="code-error" role="alert">Please enter a valid bibledose.app link.</p>`
+    : '';
+  const rightCol = `<div class="inv-col">
+    <h3>Or paste a link</h3>
+    <label class="u-sr-only" for="joinUrlInput">Study URL</label>
+    <input class="inv-field ${st.urlInvalid ? 'error' : ''}" id="joinUrlInput"
+           placeholder="bibledose.app/join/..." autocomplete="off"
+           value="${st.urlValue || ''}"
+           oninput="onJoinUrlInput(this.value)">
+    <div class="inv-spinner ${st.urlChecking ? 'visible' : ''}" id="joinUrlSpinner"></div>
+    ${urlError}
+  </div>`;
 
-  const html = buildModalShell({
-    id:             'joinBackdrop',
-    accent:         'orange-band',
-    title:          'Join a different study',
-    bodyHtml:       leftCol + rightCol,
-    submitLabel:    'Join study',
-    submitId:       'joinSubmitBtn',
-    submitDisabled: !canSubmit,
-    formId:         'formJoinStudy',
-    closeFn:        'closeJoinModal'
-  });
+  const canSubmit = !!st.confirmed;
+
+  // ── Full-width confirmation overlay ─────────────────────────
+  const confirmHtml = st.confirmed ? `
+    <div class="full-confirm show" id="joinFullConfirm">
+      <div class="fc-ic">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </div>
+      <div class="fc-name">${st.confirmed.title}</div>
+      <div class="fc-detail">${st.confirmed.church}${st.confirmed.time ? ' · ' + st.confirmed.time : ''}</div>
+      <button class="fc-change" type="button" onclick="resetJoinConfirm()">Use a different code</button>
+    </div>` : '';
+
+  const modalBody = st.confirmed
+    ? `<div class="inv-body" style="display:none">${leftCol}${rightCol}</div>${confirmHtml}`
+    : `<div class="inv-body">${leftCol}${rightCol}</div>`;
+
+  const html = `
+    <div class="inv-backdrop" id="joinBackdrop" role="dialog" aria-modal="true" aria-label="Join a different study">
+      <div class="inv-modal split-modal modal-join-solid">
+        <div class="modal-inner">
+          <div class="split-modal-header">
+            <span class="split-modal-title">Join a different study</span>
+            <button class="inv-close" type="button" data-close-modal="closeJoinModal" aria-label="Close Join a different study">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <form id="formJoinStudy" novalidate class="split-modal-form">
+            ${modalBody}
+            <div class="split-modal-footer">
+              <button type="button" class="btn btn-secondary" data-close-modal="closeJoinModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="joinSubmitBtn" ${canSubmit ? '' : 'disabled'}>Join study</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>`;
 
   document.getElementById('join-modal-root').innerHTML = html;
-
-  const codeInput = document.getElementById('joinCodeInput');
-  if (codeInput) {
-    codeInput.addEventListener('input', onJoinCodeInput);
-    // Posicionar el cursor al final tras re-render
-    codeInput.focus();
-    codeInput.setSelectionRange(codeInput.value.length, codeInput.value.length);
-  }
 }
 
-/* Input de código — fuerza mayúsculas + debounce 900ms */
-function onJoinCodeInput(e) {
+function onJoinUrlInput(val) {
   const st = state.join;
   if (!st) return;
-  st.codeValue   = e.target.value.toUpperCase();
-  st.codeInvalid = false;
-
-  clearTimeout(_joinDebounceTimer);
-  _joinDebounceTimer = setTimeout(() => validateJoinCode(), 900);
+  st.urlValue    = val;
+  st.urlInvalid  = false;
+  st.urlChecking = false;
+  st.confirmed   = null;
+  clearTimeout(_joinUrlTimer);
+  if (!val.trim()) { renderJoinModal(); return; }
+  st.urlChecking = true;
+  renderJoinModal();
+  _joinUrlTimer = setTimeout(() => {
+    st.urlChecking = false;
+    if (validBibleDoseUrl(val)) {
+      st.confirmed  = { title: 'The Good Soil', church: 'Life Church', time: '7:00 PM' };
+      st.urlInvalid = false;
+    } else {
+      st.confirmed  = null;
+      st.urlInvalid = true;
+    }
+    renderJoinModal();
+  }, 800);
 }
 
-/* "Validación contra backend" — stub determinista para demo.
-   TODO: reemplazar con POST /api/sessions/validate-code real. */
-function validateJoinCode() {
+function resetJoinConfirm() {
   const st = state.join;
   if (!st) return;
-  const code = (st.codeValue || '').trim();
-  if (!code) return;
-
-  // Stub: cualquier código de 6+ caracteres se considera válido
-  console.info('[API] POST /api/sessions/validate-code', { code });
-  if (code.length >= 6) {
-    st.confirmed = {
-      title:  'The Good Soil',
-      church: 'Life Church',
-      time:   '7:00 PM'
-    };
-    st.codeInvalid = false;
-  } else {
-    st.confirmed   = null;
-    st.codeInvalid = true;
-  }
+  st.confirmed   = null;
+  st.urlValue    = '';
+  st.urlInvalid  = false;
+  st.camera      = null;
+  st.qrInvalid   = false;
   renderJoinModal();
 }
 
-/* Room ID / Passcode — habilita el submit cuando ambos están llenos */
-function onJoinFieldInput() {
-  const st = state.join;
-  if (!st) return;
-  st.roomId       = document.getElementById('joinRoomId')?.value || '';
-  st.roomPasscode = document.getElementById('joinRoomPasscode')?.value || '';
-  const btn = document.getElementById('joinSubmitBtn');
-  if (btn) btn.disabled = !(st.confirmed || (st.roomId.trim() && st.roomPasscode.trim()));
-}
-
 function closeJoinModal() {
-  clearTimeout(_joinDebounceTimer);
+  clearTimeout(_joinUrlTimer);
   document.getElementById('join-modal-root').innerHTML = '';
   state.join = null;
 }
@@ -964,136 +1034,177 @@ function closeJoinModal() {
 document.getElementById('join-modal-root').addEventListener('submit', async e => {
   if (e.target.id !== 'formJoinStudy') return;
   e.preventDefault();
-
   const st = state.join;
-  const payload = st.confirmed
-    ? { mode: 'code', code: st.codeValue }
-    : { mode: 'room', roomId: st.roomId, roomPasscode: st.roomPasscode };
-
-  // TODO: reemplazar con endpoint real cuando esté disponible.
-  // await API.joinStudy(payload);
+  if (!st?.confirmed) return;
+  const payload = { mode: 'url', url: st.urlValue || '', qr: st.camera === true };
   console.info('[API] POST /api/sessions/join', payload);
-
-  const root = document.getElementById('join-modal-root');
-  const body = root.querySelector('.inv-body');
-  if (body) {
-    body.innerHTML = `<div class="inv-col" style="flex:1"><div class="inv-success" role="status">✓ You're in! Joining the study…</div></div>`;
-  }
-  setTimeout(() => closeJoinModal(), 2000);
+  const root  = document.getElementById('join-modal-root');
+  const inner = root.querySelector('.modal-inner');
+  if (inner) inner.innerHTML = `<div class="inv-success-full" role="status">
+    <div class="success-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <h3>You're in!</h3><p>Joining the study now…</p></div>`;
+  setTimeout(() => closeJoinModal(), 2200);
 });
 
 /* ═════════════════════════════════════════════════
-   REGISTER FOR A GROUP MODAL
+   REGISTER FOR A GROUP MODAL — v2 (3v2 design)
    ═════════════════════════════════════════════════
-   Header con borde superior naranja (regla global).
-   PANEL IZQUIERDO — Group code: mismo comportamiento
-     exacto que Join (monoespaciado, debounce 900ms, QR).
-     Al confirmarse muestra Group name / Leader / Church.
-   PANEL DERECHO — Group Details: "Group Name", usado
-     solo si NO se confirmó código/QR.
-   SUBMIT ("Register") — habilitado si código/QR
-     confirmado, O si Group Name está lleno.
+   Outer container: softer orange (modal-reg-outline).
+   Same structure as Join: QR left, URL right.
    ───────────────────────────────────────────────── */
-let _registerDebounceTimer = null;
+let _registerUrlTimer = null;
 
 async function openRegisterModal() {
   state.register = state.register || {
-    codeValue: '', codeInvalid: false, confirmed: null,
-    camera: null, qrInvalid: false,
-    groupName: ''
+    urlValue: '', urlInvalid: false, urlChecking: false, confirmed: null,
+    camera: null, qrInvalid: false
   };
-
   renderRegisterModal();
-  // La cámara ya NO se solicita automáticamente al abrir el
-  // modal — solo se pide cuando el usuario hace tap en el
-  // qr-box (ver startRegisterQrScan()).
 }
 
 function renderRegisterModal() {
   const st = state.register;
   if (!st) return;
 
-  const leftCol = codePanel('register', st);
+  // ── Left column: QR scan only ────────────────────────────────
+  let qrSection;
+  if (st.qrInvalid) {
+    qrSection = `
+      <div class="qr-box qr-box--invalid" role="button" tabindex="0"
+           aria-label="QR code not recognized, tap to try again"
+           onclick="startRegisterQrScan()">
+        <span class="qr-box-msg">QR code not recognized. Tap to try again.</span>
+      </div>`;
+  } else if (st.camera === true) {
+    qrSection = `
+      <div class="qr-box" aria-live="polite">
+        <div class="qr-scan-line"></div>
+        <span class="qr-box-msg">Point your camera at the QR code</span>
+      </div>`;
+  } else if (st.camera === 'denied') {
+    qrSection = `<p class="code-camera-msg">Camera access denied. Please allow camera access and try again.</p>`;
+  } else {
+    qrSection = `
+      <div class="qr-box qr-box--idle" id="registerQrBox" role="button" tabindex="0"
+           aria-label="Tap to scan QR code" onclick="startRegisterQrScan()">
+        <div class="qr-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40">
+            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+            <rect x="5" y="5" width="3" height="3" fill="currentColor" stroke="none"></rect>
+            <rect x="16" y="5" width="3" height="3" fill="currentColor" stroke="none"></rect>
+            <rect x="5" y="16" width="3" height="3" fill="currentColor" stroke="none"></rect>
+            <path d="M14 14h2v2h-2zM18 14h3M18 18h3M14 18v3M16 20h2"></path>
+          </svg>
+        </div>
+        <div class="qr-lbl">Tap to scan QR code</div>
+        <div class="qr-sub">Point your camera at a QR code</div>
+      </div>`;
+  }
 
-  const groupDisabled = !!st.confirmed;
-  const rightCol = `<div class="inv-col">
-    <h3>Group details</h3>
-    <p>Use this only if you don't have a group code or QR.</p>
-    <label class="u-sr-only" for="registerGroupName">Group name</label>
-    <input class="inv-field" id="registerGroupName" placeholder="Group name *"
-           value="${st.groupName || ''}" ${groupDisabled ? 'disabled' : ''}
-           oninput="onRegisterFieldInput()">
+  const leftCol = `<div class="inv-col">
+    <h3>Scan QR code</h3>
+    ${qrSection}
   </div>`;
 
-  const codeConfirmed = !!st.confirmed;
-  const groupFilled    = !!st.groupName?.trim();
-  const canSubmit       = codeConfirmed || groupFilled;
+  // ── Right column: URL field ──────────────────────────────────
+  const urlError = st.urlInvalid
+    ? `<p class="code-error" role="alert">Please enter a valid bibledose.app link.</p>`
+    : '';
+  const rightCol = `<div class="inv-col">
+    <h3>Or paste a link</h3>
+    <label class="u-sr-only" for="registerUrlInput">Group URL</label>
+    <input class="inv-field ${st.urlInvalid ? 'error' : ''}" id="registerUrlInput"
+           placeholder="bibledose.app/group/..." autocomplete="off"
+           value="${st.urlValue || ''}"
+           oninput="onRegisterUrlInput(this.value)">
+    <div class="inv-spinner ${st.urlChecking ? 'visible' : ''}" id="registerUrlSpinner"></div>
+    ${urlError}
+  </div>`;
 
-  const html = buildModalShell({
-    id:             'registerBackdrop',
-    accent:         'orange-border',
-    title:          'Register for a Group',
-    bodyHtml:       leftCol + rightCol,
-    submitLabel:    'Register',
-    submitId:       'registerSubmitBtn',
-    submitDisabled: !canSubmit,
-    formId:         'formRegisterGroup',
-    closeFn:        'closeRegisterModal'
-  });
+  const canSubmit = !!st.confirmed;
+
+  // ── Full-width confirmation overlay ─────────────────────────
+  const confirmHtml = st.confirmed ? `
+    <div class="full-confirm show" id="registerFullConfirm">
+      <div class="fc-ic">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </div>
+      <div class="fc-name">${st.confirmed.title}</div>
+      <div class="fc-detail">Led by ${st.confirmed.leader} · ${st.confirmed.church}</div>
+      <button class="fc-change" type="button" onclick="resetRegisterConfirm()">Use a different code</button>
+    </div>` : '';
+
+  const modalBody = st.confirmed
+    ? `<div class="inv-body" style="display:none">${leftCol}${rightCol}</div>${confirmHtml}`
+    : `<div class="inv-body">${leftCol}${rightCol}</div>`;
+
+  const html = `
+    <div class="inv-backdrop" id="registerBackdrop" role="dialog" aria-modal="true" aria-label="Register for a Group">
+      <div class="inv-modal split-modal modal-reg-outline">
+        <div class="modal-inner">
+          <div class="split-modal-header">
+            <span class="split-modal-title">Register for a Group</span>
+            <button class="inv-close" type="button" data-close-modal="closeRegisterModal" aria-label="Close Register for a Group">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <form id="formRegisterGroup" novalidate class="split-modal-form">
+            ${modalBody}
+            <div class="split-modal-footer">
+              <button type="button" class="btn btn-secondary" data-close-modal="closeRegisterModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="registerSubmitBtn" ${canSubmit ? '' : 'disabled'}>Register</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>`;
 
   document.getElementById('register-modal-root').innerHTML = html;
-
-  const codeInput = document.getElementById('registerCodeInput');
-  if (codeInput) {
-    codeInput.addEventListener('input', onRegisterCodeInput);
-    codeInput.focus();
-    codeInput.setSelectionRange(codeInput.value.length, codeInput.value.length);
-  }
 }
 
-function onRegisterCodeInput(e) {
+function onRegisterUrlInput(val) {
   const st = state.register;
   if (!st) return;
-  st.codeValue   = e.target.value.toUpperCase();
-  st.codeInvalid = false;
-
-  clearTimeout(_registerDebounceTimer);
-  _registerDebounceTimer = setTimeout(() => validateRegisterCode(), 900);
+  st.urlValue    = val;
+  st.urlInvalid  = false;
+  st.urlChecking = false;
+  st.confirmed   = null;
+  clearTimeout(_registerUrlTimer);
+  if (!val.trim()) { renderRegisterModal(); return; }
+  st.urlChecking = true;
+  renderRegisterModal();
+  _registerUrlTimer = setTimeout(() => {
+    st.urlChecking = false;
+    if (validBibleDoseUrl(val)) {
+      st.confirmed  = { title: 'Faith and Works', leader: 'Maria Torres', church: 'Grace Chapel' };
+      st.urlInvalid = false;
+    } else {
+      st.confirmed  = null;
+      st.urlInvalid = true;
+    }
+    renderRegisterModal();
+  }, 800);
 }
 
-/* "Validación contra backend" — stub determinista para demo.
-   TODO: reemplazar con POST /api/groups/validate-code real. */
-function validateRegisterCode() {
+function resetRegisterConfirm() {
   const st = state.register;
   if (!st) return;
-  const code = (st.codeValue || '').trim();
-  if (!code) return;
-
-  console.info('[API] POST /api/groups/validate-code', { code });
-  if (code.length >= 6) {
-    st.confirmed = {
-      title:  'Faith and Works',
-      leader: 'Maria Torres',
-      church: 'Grace Chapel'
-    };
-    st.codeInvalid = false;
-  } else {
-    st.confirmed   = null;
-    st.codeInvalid = true;
-  }
+  st.confirmed   = null;
+  st.urlValue    = '';
+  st.urlInvalid  = false;
+  st.camera      = null;
+  st.qrInvalid   = false;
   renderRegisterModal();
 }
 
-function onRegisterFieldInput() {
-  const st = state.register;
-  if (!st) return;
-  st.groupName = document.getElementById('registerGroupName')?.value || '';
-  const btn = document.getElementById('registerSubmitBtn');
-  if (btn) btn.disabled = !(st.confirmed || st.groupName.trim());
-}
-
 function closeRegisterModal() {
-  clearTimeout(_registerDebounceTimer);
+  clearTimeout(_registerUrlTimer);
   document.getElementById('register-modal-root').innerHTML = '';
   state.register = null;
 }
@@ -1101,27 +1212,26 @@ function closeRegisterModal() {
 document.getElementById('register-modal-root').addEventListener('submit', async e => {
   if (e.target.id !== 'formRegisterGroup') return;
   e.preventDefault();
-
   const st = state.register;
-  const payload = st.confirmed
-    ? { mode: 'code', code: st.codeValue }
-    : { mode: 'groupName', groupName: st.groupName };
-
-  // TODO: reemplazar con endpoint real cuando esté disponible.
-  // await API.registerForGroup(payload);
+  if (!st?.confirmed) return;
+  const payload = { mode: 'url', url: st.urlValue || '', qr: st.camera === true };
   console.info('[API] POST /api/groups/register', payload);
-
-  const root = document.getElementById('register-modal-root');
-  const body = root.querySelector('.inv-body');
-  if (body) {
-    body.innerHTML = `<div class="inv-col" style="flex:1"><div class="inv-success" role="status">✓ You're registered for the group!</div></div>`;
-  }
-  setTimeout(() => closeRegisterModal(), 2000);
+  const root  = document.getElementById('register-modal-root');
+  const inner = root.querySelector('.modal-inner');
+  if (inner) inner.innerHTML = `<div class="inv-success-full" role="status">
+    <div class="success-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <h3>You\'re registered!</h3><p>Your group has been added to your dashboard.</p></div>`;
+  setTimeout(() => closeRegisterModal(), 2200);
 });
 
 // Triggers de la topbar — abren cada modal
 document.getElementById('topJoinBtn').addEventListener('click', openJoinModal);
 document.getElementById('topRegisterBtn').addEventListener('click', openRegisterModal);
+// Item 1: Settings and Profile topbar buttons
+document.getElementById('settingsTopJoinBtn').addEventListener('click', openJoinModal);
+document.getElementById('settingsTopRegisterBtn').addEventListener('click', openRegisterModal);
+document.getElementById('profileTopJoinBtn').addEventListener('click', openJoinModal);
+document.getElementById('profileTopRegisterBtn').addEventListener('click', openRegisterModal);
 
 /* ─────────────────────────────────────────────────
    ZONE CARD RENDERER
@@ -1251,7 +1361,7 @@ function renderRow(x) {
   // Día de la semana abreviado en mayúsculas + mes + día
   // Formato requerido: "Mon JUN 9" (sin hora, en colapsado y expandido)
   const dayShort   = d.toLocaleDateString('en-US', { weekday: 'short' });
-  const dateStr    = `${MONTHS[d.getMonth()]} · ${dayShort} ${d.getDate()}`;
+  const dateStr    = `${dayShort} · ${MONTHS[d.getMonth()]} ${d.getDate()}`;
 
   // Dot indicator — teal si asistió, gris si no
   const dotClass = attended ? 'attended' : 'missed';
@@ -1713,7 +1823,9 @@ document.getElementById('settingsBtn').addEventListener('click', () => {
 document.getElementById('logoutBtn').addEventListener('click', () => {
   profileDrop.classList.add('u-hidden');
   profileBtn.setAttribute('aria-expanded', 'false');
+  // Item 12: redirect to login page (frontend only)
   showToast('Logging out…');
+  setTimeout(() => { window.location.href = '/login.html'; }, 800);
 });
 
 // ── Delegación global ────────────────────────────
@@ -2264,22 +2376,12 @@ function syncProfileScreen() {
     .forEach(el => { el.classList.remove('error'); el.setAttribute('aria-invalid','false'); });
 }
 
-/* Habilita "Save changes" solo si algo cambió */
+/* Habilita "Save changes" solo si algo cambió y email válido — Items 3-6 */
 function checkProfileDirty() {
-  const fFirst = document.getElementById('profileFirstName');
-  const fLast  = document.getElementById('profileLastName');
-  const fEmail = document.getElementById('profileEmail');
-  const fFile  = document.getElementById('avatarFile');
-  const btn    = document.getElementById('saveProfileBtn');
-  if (!btn) return;
-
-  const dirty =
-    (fFirst?.value.trim() !== _profileOriginal.firstName) ||
-    (fLast?.value.trim()  !== _profileOriginal.lastName)  ||
-    (fEmail?.value.trim() !== _profileOriginal.email)     ||
-    (fFile?.files.length  > 0);
-
-  btn.disabled = !dirty;
+  // Delegate to the full validator that also checks email confirm
+  if (typeof updateSaveProfileBtn === 'function') {
+    updateSaveProfileBtn();
+  }
 }
 
 /* ── API stub — muta data.user y propaga al DOM ──────────── */
@@ -2350,8 +2452,24 @@ document.getElementById('formProfile').addEventListener('submit', async e => {
     const p = document.getElementById('profileEmailError');
     i.classList.add('error'); i.setAttribute('aria-invalid','true');
     p.classList.add('visible');
-    if (valid) i.focus(); // solo el primer error toma foco
+    if (valid) i.focus();
     valid = false;
+  }
+
+  // Item 5: confirm email must match and pass format validation
+  const emailConfirm = document.getElementById('profileEmailConfirm')?.value.trim() || '';
+  if (emailConfirm) {
+    if (!emailRe.test(emailConfirm) || emailConfirm !== email) {
+      const i = document.getElementById('profileEmailConfirm');
+      const p = document.getElementById('profileEmailConfirmError');
+      if (i) { i.classList.add('error'); i.setAttribute('aria-invalid','true'); }
+      if (p) {
+        p.textContent = !emailRe.test(emailConfirm) ? 'Please enter a valid email address.' : 'Email addresses do not match.';
+        p.classList.add('visible');
+      }
+      if (valid && i) i.focus();
+      valid = false;
+    }
   }
 
   if (!valid) return;
@@ -2407,8 +2525,212 @@ document.getElementById('formProfile').addEventListener('input', e => {
 /* ─────────────────────────────────────────────────
    INIT
    ───────────────────────────────────────────────── */
+
+/* ═════════════════════════════════════════════════
+   PASSWORD STRENGTH BAR — Item 7
+   4 segments: Weak / Fair / Good / Strong
+   Conditions: 8+ chars, uppercase, number, special char
+   ═════════════════════════════════════════════════ */
+function getPasswordStrength(pw) {
+  let score = 0;
+  if ((pw || '').length >= 8)       score++;
+  if (/[A-Z]/.test(pw || ''))       score++;
+  if (/[0-9]/.test(pw || ''))       score++;
+  if (/[^A-Za-z0-9]/.test(pw || '')) score++;
+  return score; // 0-4
+}
+
+const PW_STRENGTH_LABELS = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+const PW_STRENGTH_CLASSES = ['', 'pw-strength--weak', 'pw-strength--fair', 'pw-strength--good', 'pw-strength--strong'];
+
+function updatePasswordStrengthBar(pw) {
+  const bar   = document.getElementById('pwStrengthBar');
+  const label = document.getElementById('pwStrengthLabel');
+  if (!bar || !label) return;
+
+  const score = getPasswordStrength(pw);
+  const segs  = bar.querySelectorAll('.pw-strength-seg');
+
+  // Remove all state classes from bar
+  bar.className = 'pw-strength';
+  if (pw && score > 0) bar.classList.add(PW_STRENGTH_CLASSES[score]);
+
+  segs.forEach((seg, i) => {
+    seg.classList.toggle('active', i < score);
+  });
+  label.textContent = pw ? PW_STRENGTH_LABELS[score] : '';
+}
+
+function initPasswordStrength() {
+  const newPwInput = document.getElementById('newPassword');
+  if (!newPwInput) return;
+  newPwInput.addEventListener('input', () => {
+    updatePasswordStrengthBar(newPwInput.value);
+    updateSavePasswordBtn();
+  });
+  // Also update confirm field listener for save button
+  const confirmPwInput = document.getElementById('confirmPassword');
+  if (confirmPwInput) {
+    confirmPwInput.addEventListener('input', updateSavePasswordBtn);
+  }
+  const currentPwInput = document.getElementById('currentPassword');
+  if (currentPwInput) {
+    currentPwInput.addEventListener('input', updateSavePasswordBtn);
+  }
+}
+
+/* Item 8: Save password button — grey/disabled until all 3 conditions met */
+function updateSavePasswordBtn() {
+  const current = document.getElementById('currentPassword')?.value || '';
+  const newPw   = document.getElementById('newPassword')?.value || '';
+  const confirm = document.getElementById('confirmPassword')?.value || '';
+  const btn     = document.querySelector('#formPassword [type="submit"]');
+  if (!btn) return;
+  const allMet = current.trim().length > 0 && newPw.length >= 8 && newPw === confirm;
+  btn.disabled = !allMet;
+  btn.classList.toggle('btn-primary--active', allMet);
+}
+
+/* ═════════════════════════════════════════════════
+   EMAIL CONFIRMATION VALIDATION — Items 3,4,5,6
+   ═════════════════════════════════════════════════ */
+function validateEmailOnBlur(input, errEl) {
+  const val = (input.value || '').trim();
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (val && !emailRe.test(val)) {
+    input.classList.add('error');
+    input.setAttribute('aria-invalid', 'true');
+    errEl.classList.add('visible');
+    return false;
+  }
+  input.classList.remove('error');
+  input.setAttribute('aria-invalid', 'false');
+  errEl.classList.remove('visible');
+  return true;
+}
+
+function checkEmailConfirmMatch() {
+  const emailInput   = document.getElementById('profileEmail');
+  const confirmInput = document.getElementById('profileEmailConfirm');
+  const errEl        = document.getElementById('profileEmailConfirmError');
+  if (!emailInput || !confirmInput || !errEl) return;
+  const email   = emailInput.value.trim();
+  const confirm = confirmInput.value.trim();
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const bothValid = emailRe.test(email) && emailRe.test(confirm);
+  const match     = email === confirm;
+  if (confirm && (!match || !bothValid)) {
+    confirmInput.classList.add('error');
+    confirmInput.setAttribute('aria-invalid', 'true');
+    errEl.classList.add('visible');
+    errEl.textContent = !bothValid ? 'Please enter a valid email address.' : 'Email addresses do not match.';
+  } else {
+    confirmInput.classList.remove('error');
+    confirmInput.setAttribute('aria-invalid', 'false');
+    errEl.classList.remove('visible');
+  }
+}
+
+function updateSaveProfileBtn() {
+  const emailInput   = document.getElementById('profileEmail');
+  const confirmInput = document.getElementById('profileEmailConfirm');
+  const btn          = document.getElementById('saveProfileBtn');
+  if (!btn || !emailInput) return;
+
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const email   = (emailInput.value || '').trim();
+  const confirm = (confirmInput?.value || '').trim();
+
+  // Email must be valid format
+  const emailValid = emailRe.test(email);
+  // Confirm must match and be valid
+  const confirmOk = !confirm || (emailRe.test(confirm) && email === confirm);
+  // If confirm field exists and has been touched, it must match
+  const confirmRequired = confirm.length > 0 ? (emailRe.test(confirm) && email === confirm) : true;
+
+  const emailsOk = emailValid && confirmRequired;
+
+  // Dirty check (reuse existing _profileOriginal)
+  const fFirst = document.getElementById('profileFirstName');
+  const fLast  = document.getElementById('profileLastName');
+  const fFile  = document.getElementById('avatarFile');
+  const dirty =
+    (fFirst?.value.trim() !== _profileOriginal.firstName) ||
+    (fLast?.value.trim()  !== _profileOriginal.lastName)  ||
+    (email                !== _profileOriginal.email)     ||
+    (fFile?.files.length  > 0);
+
+  btn.disabled = !(dirty && emailsOk);
+}
+
+function initEmailConfirmValidation() {
+  const emailInput   = document.getElementById('profileEmail');
+  const confirmInput = document.getElementById('profileEmailConfirm');
+  const emailErr     = document.getElementById('profileEmailError');
+  const confirmErr   = document.getElementById('profileEmailConfirmError');
+  if (!emailInput) return;
+
+  // Item 4: validate on blur
+  emailInput.addEventListener('blur', () => {
+    validateEmailOnBlur(emailInput, emailErr);
+    checkEmailConfirmMatch();
+    updateSaveProfileBtn();
+  });
+  emailInput.addEventListener('input', () => {
+    // Clear error while typing, re-check confirm match
+    if (emailInput.classList.contains('error')) {
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (emailRe.test(emailInput.value.trim())) {
+        emailInput.classList.remove('error');
+        emailInput.setAttribute('aria-invalid', 'false');
+        emailErr.classList.remove('visible');
+      }
+    }
+    checkEmailConfirmMatch();
+    updateSaveProfileBtn();
+  });
+
+  if (confirmInput) {
+    confirmInput.addEventListener('blur', () => {
+      checkEmailConfirmMatch();
+      updateSaveProfileBtn();
+    });
+    confirmInput.addEventListener('input', () => {
+      checkEmailConfirmMatch();
+      updateSaveProfileBtn();
+    });
+  }
+}
+
+/* ═════════════════════════════════════════════════
+   QR SCAN HELPERS for new v2 modals
+   ═════════════════════════════════════════════════ */
+async function startJoinQrScan() {
+  const st = state.join;
+  if (!st || st.camera === true) return;
+  st.qrInvalid = false;
+  const available = await checkCameraAvailable();
+  if (!state.join) return;
+  state.join.camera = available ? true : 'denied';
+  renderJoinModal();
+}
+
+async function startRegisterQrScan() {
+  const st = state.register;
+  if (!st || st.camera === true) return;
+  st.qrInvalid = false;
+  const available = await checkCameraAvailable();
+  if (!state.register) return;
+  state.register.camera = available ? true : 'denied';
+  renderRegisterModal();
+}
+
 syncSettingsHeader();
 initPasswordToggles();
+initPasswordStrength();
+initEmailConfirmValidation();
 
+// Item 10: clear search state on every page load
+state.search = '';
 
 render();

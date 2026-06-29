@@ -530,6 +530,93 @@
   }
 
   /* ──────────────────────────────────────────────
+     TOAST
+  ────────────────────────────────────────────── */
+  function showToast(message, opts = {}) {
+    /* opts: { type: 'error'|'info', duration: ms, action: { label, fn } } */
+    const existing = document.getElementById('bd-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'bd-toast';
+
+    const isError = opts.type === 'error';
+    Object.assign(toast.style, {
+      position:      'fixed',
+      top:           '20px',
+      left:          '50%',
+      transform:     'translateX(-50%)',
+      zIndex:        '9999',
+      fontFamily:    "'Poppins', sans-serif",
+      fontSize:      '13px',
+      fontWeight:    '500',
+      color:         '#fff',
+      background:    isError ? '#C0392B' : '#1E3A5F',
+      padding:       '11px 16px',
+      borderRadius:  '10px',
+      boxShadow:     '0 6px 24px rgba(0,0,0,.28)',
+      display:       'flex',
+      alignItems:    'center',
+      gap:           '10px',
+      maxWidth:      '360px',
+      width:         'calc(100% - 40px)',
+      boxSizing:     'border-box',
+      animation:     'bd-toast-in .22s ease',
+    });
+
+    // Inject keyframe once
+    if (!document.getElementById('bd-toast-style')) {
+      const s = document.createElement('style');
+      s.id = 'bd-toast-style';
+      s.textContent = `
+        @keyframes bd-toast-in {
+          from { opacity:0; transform:translateX(-50%) translateY(-8px); }
+          to   { opacity:1; transform:translateX(-50%) translateY(0); }
+        }
+      `;
+      document.head.appendChild(s);
+    }
+
+    const msg = document.createElement('span');
+    msg.style.flex = '1';
+    msg.textContent = message;
+    toast.appendChild(msg);
+
+    if (opts.action) {
+      const btn = document.createElement('button');
+      btn.textContent = opts.action.label;
+      Object.assign(btn.style, {
+        fontFamily:   "'Poppins', sans-serif",
+        fontSize:     '12px',
+        fontWeight:   '700',
+        color:        '#fff',
+        background:   'rgba(255,255,255,.22)',
+        border:       'none',
+        borderRadius: '6px',
+        padding:      '5px 10px',
+        cursor:       'pointer',
+        whiteSpace:   'nowrap',
+        flexShrink:   '0',
+      });
+      btn.addEventListener('click', () => {
+        toast.remove();
+        opts.action.fn();
+      });
+      toast.appendChild(btn);
+    }
+
+    // Close on click anywhere on toast (if no action button was clicked)
+    toast.addEventListener('click', (e) => {
+      if (e.target !== toast.querySelector('button')) toast.remove();
+    });
+
+    document.body.appendChild(toast);
+
+    const duration = opts.duration ?? (opts.action ? 8000 : 4000);
+    setTimeout(() => toast?.remove(), duration);
+  }
+
+  /* ──────────────────────────────────────────────
      API CALLS  (REST — Node/Express backend)
   ────────────────────────────────────────────── */
 
@@ -538,13 +625,14 @@
    * Body: { groupId }
    * Response: { success, user: { id, name }, isMember }
    * Called from M01 (live) and M07 (no-live)
+   *
+   * On failure: shows a toast with a "Continue as guest" recovery action
+   * so the user is never left stranded — the flow can still proceed.
    */
   async function apiSignIn(context) {
-    // In production: open your sign-in modal / redirect with returnUrl
-    // For this flow we simulate the API response via state injected by dev panel
     try {
       const res = await apiFetch('/auth/signin', { groupId: state.groupId });
-      if (!res.success) throw new Error('Sign-in failed');
+      if (!res.success) throw new Error(res.error ?? 'Sign-in failed');
 
       setCookie({ name: res.user.name, userId: res.user.id });
 
@@ -555,6 +643,29 @@
       }
     } catch (err) {
       console.error('[BibleDose] Sign-in error:', err);
+
+      // Recovery options differ by context:
+      // live  → offer "Join as guest" (M03) so they can still attend
+      // nolive → offer "Maybe later"  (M11) — nothing live anyway
+      if (context === 'live') {
+        showToast("Couldn't sign in. You can still join as a guest.", {
+          type:     'error',
+          duration: 9000,
+          action: {
+            label: 'Join as guest',
+            fn:    () => showM03('direct'),
+          },
+        });
+      } else {
+        showToast("Couldn't sign in. You can continue as a visitor.", {
+          type:     'error',
+          duration: 9000,
+          action: {
+            label: 'Continue',
+            fn:    () => showM11(),
+          },
+        });
+      }
     }
   }
 
@@ -684,7 +795,7 @@
   function navigateTo(destination, isLiveContext) {
     const targets = {
       session:          '/session/' + (state.groupId ?? ''),
-      dashboard:        '/dashboard',
+      dashboard:        'dashboard.html',
       login:            '/login',
       'create-account': '/create-account?returnGroup=' + (state.groupId ?? ''),
     };
@@ -695,8 +806,7 @@
 
       // Simulate post-account-creation return: keep overlay open, go to M09
       if (destination === 'create-account') {
-        window.__BD_DEV_NOTIFY__?.('Simulando: cuenta creada → M09');
-        // Short delay to mimic external flow returning
+        window.__BD_DEV_NOTIFY__?.('Simulating: account created → M09');
         setTimeout(() => {
           setCookie({ name: window.__BD_DEV_CONFIG__?.userName || 'New User', userId: 'u-new' });
           showM09();
@@ -811,7 +921,7 @@
 
     // Dev panel present — it will call trigger() itself, skip auto-start
     if (window.__BD_DEV_MODE__) return;
-    
+
     const opts = resolveStartOpts();
 
     // No group context found — nothing to trigger
@@ -883,5 +993,5 @@
   } else {
     autoStart();
   }
-  
+
 })();

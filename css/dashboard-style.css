@@ -150,12 +150,16 @@ body {
 .top-register {
   font-family: inherit;
   font-size: 14px;
-  padding: 10px 18px;
-  border-radius: 11px;
+  font-weight: 600;
+  padding: 9px 14px;
+  border-radius: 10px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   white-space: nowrap;
+  background-color: white;
+  color: var(--orange);
+  border: 1.5px solid var(--orange);
 }
 .top-register svg { width: 16px; height: 16px; flex-shrink: 0; }
 
@@ -1369,10 +1373,10 @@ hr.div { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
      proporcionalmente, border-radius más compacto/ajustado */
   .top-join,
   .top-register {
-    font-size: 12.5px;
-    padding: 7px 12px;
-    border-radius: 8px;
-    gap: 6px;
+    font-size: 12.5px !important;
+    padding: 7px 12px !important;
+    border-radius: 8px !important;
+    gap: 6px !important;
   }
   .top-join svg, .top-register svg { width: 14px; height: 14px; }
 
@@ -1673,4 +1677,297 @@ a.btn {
 
   .history-date-select { width: 100%; }
   .history-pagination  { align-items: center; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BIBLE DOSE — todo_live_site_updates_6-24-2026 — NEW STYLES
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Item 1: Register ghost button in Settings/Profile topbar ── */
+
+.btn-orange-ghost.top-register:hover {
+  background: var(--orange-tint);
+}
+.btn-orange-ghost.top-register svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* ── Items 2/3: v2 Modal containers (colored outer wrapper) ── */
+.modal-join-solid {
+  border-radius: 22px !important;
+  padding: 10px !important;
+  background: var(--orange-tint, #FFE8D6) !important;
+  border: 2px solid var(--orange, #FF6600) !important;
+  box-shadow: 0 20px 50px -8px rgba(255,102,0,.25) !important;
+}
+.modal-reg-outline {
+  border-radius: 22px !important;
+  padding: 10px !important;
+  background: #fff3ec !important;
+  border: 2px solid #ffb380 !important;
+  box-shadow: 0 20px 50px -8px rgba(255,102,0,.15) !important;
+}
+.modal-join-solid .modal-inner,
+.modal-reg-outline .modal-inner {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.modal-join-solid .split-modal-title,
+.modal-reg-outline .split-modal-title {
+  color: var(--orange-press, #B84A00);
+}
+
+/* Full-width confirmation inside modal */
+.full-confirm {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 36px 28px;
+  min-height: 260px;
+  animation: fo .2s ease;
+}
+.full-confirm.show { display: flex; }
+.full-confirm .fc-ic {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--teal-tint, #E0F7F7);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  color: var(--teal-dark, #0B7E7E);
+}
+.full-confirm .fc-name { font-size: 20px; font-weight: 700; color: var(--navy, #1E3A5F); margin-bottom: 4px; }
+.full-confirm .fc-detail { font-size: 14px; color: var(--bg-base, #6E7881); }
+.full-confirm .fc-change {
+  background: none; border: none; font-family: inherit; font-size: 13px;
+  font-weight: 600; color: var(--teal-dark, #0B7E7E); cursor: pointer;
+  margin-top: 14px; text-decoration: underline;
+}
+
+/* Spinner inside modal URL field */
+.inv-spinner {
+  display: none; width: 14px; height: 14px;
+  border: 2px solid var(--line, #E7EAEF); border-top-color: var(--bg-base, #6E7881);
+  border-radius: 50%; animation: spin .7s linear infinite; margin: 6px auto 0;
+}
+.inv-spinner.visible { display: block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Full-page success state inside modal */
+.inv-success-full {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center; padding: 48px 24px;
+}
+.inv-success-full .success-ic {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--teal-tint, #E0F7F7);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px; color: var(--teal-dark, #0B7E7E);
+}
+.inv-success-full h3 { font-size: 20px; font-weight: 700; color: var(--navy, #1E3A5F); }
+.inv-success-full p  { font-size: 14px; color: var(--bg-base, #6E7881); margin-top: 6px; }
+
+/* Centered column for Invite/Share left panel (Item 2) */
+.inv-col--centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.inv-col--centered .share-sub {
+  font-size: 14px; color: var(--bg-base, #6E7881); margin-bottom: 14px; line-height: 1.5;
+}
+.inv-col--centered .link-box {
+  background: var(--bg-tint, #EDEFF1); border: 1px solid var(--line, #E7EAEF);
+  border-radius: 9px; padding: 10px 12px; font-size: 11.5px; color: var(--bg-base, #6E7881);
+  word-break: break-all; margin-bottom: 10px; line-height: 1.5; width: 100%;
+}
+.copy-btn {
+  width: 100%; font-family: inherit; font-size: 15px; font-weight: 600;
+  padding: 12px; border-radius: 11px; border: 1.5px solid var(--line, #E7EAEF);
+  background: #fff; color: var(--navy, #1E3A5F); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 7px; transition: .15s;
+}
+.copy-btn:hover { background: var(--bg-tint, #EDEFF1); }
+
+/* ── Item 7: Password strength bar ── */
+.pw-strength {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pw-strength-segments {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+.pw-strength-seg {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line, #E7EAEF);
+  transition: background .2s;
+}
+/* Segment active states by strength level */
+.pw-strength--weak   .pw-strength-seg.active { background: var(--red, #D83232); }
+.pw-strength--fair   .pw-strength-seg.active { background: #F59E0B; }
+.pw-strength--good   .pw-strength-seg.active { background: var(--teal, #0FA8A8); }
+.pw-strength--strong .pw-strength-seg.active { background: #16A34A; }
+
+.pw-strength-label {
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
+  transition: color .2s;
+}
+.pw-strength--weak   .pw-strength-label { color: var(--red, #D83232); }
+.pw-strength--fair   .pw-strength-label { color: #F59E0B; }
+.pw-strength--good   .pw-strength-label { color: var(--teal, #0FA8A8); }
+.pw-strength--strong .pw-strength-label { color: #16A34A; }
+
+/* ── Item 8: Save password disabled/active state ── */
+#formPassword [type="submit"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Items 3-6: Confirm email field ── */
+#profileEmailConfirm { }
+
+/* ── Item 9: Date range — two separate input fields side by side ── */
+/* The existing date-range-bar already uses flex — just ensure
+   the fields are equal width and there's no combined bar wrapper */
+.date-range-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.date-range-field {
+  flex: 1;
+}
+.date-range-input {
+  width: 100%;
+}
+/* Remove the old combined-bar look if it existed */
+.date-range-sep {
+  color: var(--bg-light, #A3ABB2);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MODALES INVITE GUEST & SHARE STUDY — v2 (3v2 colored container)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Contenedor teal — Invite Guest */
+.modal-invite-teal {
+  border-radius: 22px !important;
+  padding: 10px !important;
+  background: var(--teal-tint, #E0F7F7) !important;
+  border: 2px solid var(--teal, #0FA8A8) !important;
+  box-shadow: 0 20px 50px -8px rgba(15,168,168,.22) !important;
+}
+
+/* Contenedor teal suave — Share Study */
+.modal-share-teal {
+  border-radius: 22px !important;
+  padding: 10px !important;
+  background: #e8fafa !important;
+  border: 2px solid #6fd4d4 !important;
+  box-shadow: 0 20px 50px -8px rgba(15,168,168,.15) !important;
+}
+
+/* Inner card blanco para ambos */
+.modal-invite-teal .modal-inner,
+.modal-share-teal .modal-inner {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* Title teal para los dos */
+.modal-invite-teal .split-modal-title,
+.modal-share-teal .split-modal-title {
+  color: var(--teal-dark, #0B7E7E);
+}
+
+/* ── Columna izquierda centrada — Invite Guest & Share Study ── */
+/*
+  inv-col--centered ya existe pero le falta min-height para que
+  el centrado vertical sea visible cuando la columna derecha
+  es más alta por los campos de formulario.
+*/
+.inv-col.inv-col--centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 200px;
+  gap: 10px;
+}
+
+.inv-col--centered h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 0;
+}
+
+.inv-col--centered .share-sub {
+  font-size: 13px;
+  color: var(--bg-base);
+  line-height: 1.55;
+  max-width: 180px;
+  margin-bottom: 0;
+}
+
+/* Link box — URL de solo lectura en Share Study */
+.inv-col--centered .link-box {
+  background: var(--bg-tint, #EDEFF1);
+  border: 1px solid var(--line, #E7EAEF);
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-size: 11px;
+  font-family: 'SF Mono', 'Courier New', monospace;
+  color: var(--bg-base);
+  word-break: break-all;
+  line-height: 1.5;
+  width: 100%;
+  text-align: left;
+}
+
+/* Botón Copy link centrado */
+.inv-col--centered .copy-btn {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 16px;
+  border-radius: 11px;
+  border: 1.5px solid var(--teal, #0FA8A8);
+  background: #fff;
+  color: var(--teal-dark, #0B7E7E);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: background .15s;
+}
+.inv-col--centered .copy-btn:hover {
+  background: var(--teal-tint, #E0F7F7);
+}
+
+/* Estado copiado */
+.inv-col--centered .inv-copied {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--teal-dark, #0B7E7E);
 }

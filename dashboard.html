@@ -193,7 +193,17 @@
           <rect x="4" y="3" width="11" height="18" rx="1.5"/>
           <path d="M21 12H10M16 8l4 4-4 4"/>
         </svg>
-        <span class="btn-text">Join a different study</span>
+        <span class="btn-text btn-text-full">Join a different study</span>
+        <span class="btn-text btn-text-short">Join</span>
+      </button>
+      <button class="btn-orange-ghost top-register" id="settingsTopRegisterBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M19 8v6M22 11h-6"/>
+        </svg>
+        <span class="btn-text btn-text-full">Register for a Group</span>
+        <span class="btn-text btn-text-short">New Group</span>
       </button>
       <!-- pill estático: no es interactivo, solo informativo -->
       <div class="profile profile--static" aria-label="Usuario actual" aria-hidden="true">
@@ -299,6 +309,16 @@
             </svg>
           </button>
         </div>
+        <!-- Password strength bar — 4 segments: Weak / Fair / Good / Strong -->
+        <div class="pw-strength" id="pwStrengthBar" aria-live="polite" aria-label="Password strength">
+          <div class="pw-strength-segments">
+            <span class="pw-strength-seg" data-seg="1"></span>
+            <span class="pw-strength-seg" data-seg="2"></span>
+            <span class="pw-strength-seg" data-seg="3"></span>
+            <span class="pw-strength-seg" data-seg="4"></span>
+          </div>
+          <span class="pw-strength-label" id="pwStrengthLabel"></span>
+        </div>
         <p class="field-hint" id="newPasswordHint">
           Use 8 or more characters with a mix of letters and numbers.
         </p>
@@ -380,7 +400,17 @@
           <rect x="4" y="3" width="11" height="18" rx="1.5"/>
           <path d="M21 12H10M16 8l4 4-4 4"/>
         </svg>
-        <span class="btn-text">Join a different study</span>
+        <span class="btn-text btn-text-full">Join a different study</span>
+        <span class="btn-text btn-text-short">Join</span>
+      </button>
+      <button class="btn-orange-ghost top-register" id="profileTopRegisterBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M19 8v6M22 11h-6"/>
+        </svg>
+        <span class="btn-text btn-text-full">Register for a Group</span>
+        <span class="btn-text btn-text-short">New Group</span>
       </button>
       <div class="profile profile--static" aria-hidden="true">
         <span class="pavatar" id="profileScreenAvatar">J</span>
@@ -501,6 +531,23 @@
         >
         <p class="field-error" id="profileEmailError" role="alert" aria-live="polite">
           Please enter a valid email address.
+        </p>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="profileEmailConfirm">Confirm email address</label>
+        <input
+          class="field-input"
+          type="email"
+          id="profileEmailConfirm"
+          name="emailConfirm"
+          autocomplete="email"
+          placeholder="Confirm your email"
+          aria-describedby="profileEmailConfirmError"
+          aria-invalid="false"
+        >
+        <p class="field-error" id="profileEmailConfirmError" role="alert" aria-live="polite">
+          Email addresses do not match.
         </p>
       </div>
 
